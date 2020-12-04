@@ -1,0 +1,53 @@
+Enter the number of rows in the maze:
+
+4
+Enter the number of columns in the maze:
+
+4
+Enter the number of internal walls from the maze to be removed:
+
+2
+Enter the number of border walls from the maze to be removed:
+
+3
+Enter the percentage occurrence of Pit in maze. Enter an integer between 0 & 100
+30
+Enter the percentage occurrence of Bat in maze. Enter an integer between 0 & 100
+40
+Enter a non-zero value for number of arrows possessed by the player:
+3
+Player is in the position: (X, Y) = (0, 0)
+ 
+Do you want to view the table with Wumpus/Player/Pit positions?:
+Type Y or y to enable displaying table, press N otherwise
+Y
++------    ------+----------------+------    ------+----------------+
+|              P              Bat                  |         Wumpus |
++------    ------+------    ------+------    ------+------    ------+
+|        Pit Bat |            Bat |            Bat                  |
++----------------+----------------+------    ------+------    ------+
+                                               Pit |                
++------    ------+----------------+------    ------+------    ------+
+|                                          Pit Bat                  |
++------    ------+----------------+------    ------+----------------+
+Player can move in directions: [ N E S ]
+Player can feel draft!
+Shoot or move? Press S or s to shoot and M or m to move:
+m
+Enter the direction (N / S / E / W ) in which player wants to move:
+S
+Player encountered bats
+Player dodged the bats!!!
+Player position: (X, Y) = (1, 0)
+
+Player Lost !!!!
+Player killed by falling in pit!
++------    ------+----------------+------    ------+----------------+
+|                             Bat                  |         Wumpus |
++------    ------+------    ------+------    ------+------    ------+
+|     Bat Pit  P |            Bat |            Bat                  |
++----------------+----------------+------    ------+------    ------+
+                                               Pit |                
++------    ------+----------------+------    ------+------    ------+
+|                                          Pit Bat                  |
++------    ------+----------------+------    ------+----------------+
