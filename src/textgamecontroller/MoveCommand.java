@@ -1,4 +1,4 @@
-package gamecontroller;
+package textgamecontroller;
 
 import java.io.IOException;
 import java.util.Scanner;
@@ -47,7 +47,7 @@ public class MoveCommand extends ShootCommand {
     if (validDirection == null) {
       throw new RecoverableException("Invalid direction entered to walk\n");
     }
-    MazePoint oldPosition = this.model.getPlayerCoordinates();
+    MazePoint oldPosition = this.model.getActivePlayerCoordinates();
     MazePoint expectedPosition = this.model
             .getExpectedMovementPosition(oldPosition, validDirection);
     MazePoint newPosition;
@@ -58,13 +58,13 @@ public class MoveCommand extends ShootCommand {
     }
     try {
       model.movePlayerInDirection(validDirection);
-      newPosition = model.getPlayerCoordinates();
+      newPosition = model.getActivePlayerCoordinates();
       writeBatMovementMessage(newPosition, expectedPosition, hasBats);
     } catch (PlayerKilledException exception) {
-      newPosition = model.getPlayerCoordinates();
+      newPosition = model.getActivePlayerCoordinates();
       writeBatMovementMessage(newPosition, expectedPosition, hasBats);
       throw exception;
     }
-    output.append(this.model.printMaze()).append("\n");
+    output.append(this.model.printMaze(false)).append("\n");
   }
 }

@@ -1,7 +1,9 @@
-package gamecontroller;
+package textgamecontroller;
 
 import java.io.IOException;
 import java.util.Scanner;
+
+import gamecontrollerdefault.AbstractCommand;
 import gamemodel.IGameModel;
 import maze.Direction;
 import maze.MazeUtils;
@@ -60,6 +62,8 @@ public class ShootCommand extends AbstractCommand {
     int power = MazeUtils.parseInt(powerStr);
     if (model.shootArrow(validDirection, power)) {
       throw new PlayerKillsWumpusException("Player kills Wumpus !!!!");
+    } else {
+      output.append(model.printMaze(false));
     }
   }
 }

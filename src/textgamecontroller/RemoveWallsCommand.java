@@ -1,8 +1,10 @@
-package gamecontroller;
+package textgamecontroller;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
+
+import gamecontrollerdefault.AbstractCommand;
 import gamemodel.IGameModel;
 import graph.MazePoint;
 import maze.Direction;
@@ -52,7 +54,7 @@ public class RemoveWallsCommand extends AbstractCommand {
       String inp = scan.next();
       int value = MazeUtils.parseInt(inp);
       model.removeWalls(data, value);
-      MazePoint playerPos = model.getPlayerCoordinates();
+      MazePoint playerPos = model.getActivePlayerCoordinates();
       output.append("Player is in the position: " + playerPos.toString()
               + " \n");
       if (this.model.resultingCellHasCreature(playerPos, Direction.EAST,
@@ -62,6 +64,7 @@ public class RemoveWallsCommand extends AbstractCommand {
     } catch (PlayerKilledException exception) {
       throw exception;
     } catch (Exception exception) {
+      exception.printStackTrace();
       throw new UnrecoverableException("Unrecoverable exception: " + exception.getMessage());
     }
   }

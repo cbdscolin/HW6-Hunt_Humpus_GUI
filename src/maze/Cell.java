@@ -31,6 +31,8 @@ public class Cell {
 
   private final List<ICreature> creatures;
 
+  private boolean isVisible;
+
   /**
    * Used to initialize a cell in a maze by specifying a specific position in the maze.
    * @param rowPosition row index of the cell
@@ -47,6 +49,7 @@ public class Cell {
     this.columnPosition = columnPosition;
     this.walls =  new ArrayList<>(Arrays.asList(Direction.values()));
     this.creatures = new ArrayList<>();
+    this.isVisible = false;
   }
 
   /**
@@ -101,6 +104,23 @@ public class Cell {
     this.creatures.add(creature);
   }
 
+  public static boolean canCellKillPlayer(Cell cell) {
+    return cell == null || (cell.creatures.stream().anyMatch(creature -> (creature.getCreatureType() ==
+            CreatureType.PIT || creature.getCreatureType() == CreatureType.WUMPUS)));
+  }
+
+  public void markVisible() {
+    this.isVisible = true;
+  }
+
+  /**
+   * Returns true if this cell has been visited before.
+   * @return true if this cell has been visited by a player, false otherwise.
+   */
+  public boolean isVisible() {
+    return isVisible;
+  }
+
   /**
    * Performs actions such as kill a player, move a player randomly to a different cell, when
    * a player is added to this cell.
@@ -109,6 +129,7 @@ public class Cell {
    * @throws PlayerKilledException thrown when a player is killed.
    */
   public void performCellActions(MazePlayer player, IMaze maze) throws PlayerKilledException {
+    this.isVisible = true;
     MazePoint cellPos = new MazePoint(this.getRowPosition(), this.getColumnPosition());
     Collections.sort(this.creatures);
     Collections.reverse(this.creatures);

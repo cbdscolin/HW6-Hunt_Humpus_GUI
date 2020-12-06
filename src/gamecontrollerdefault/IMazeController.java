@@ -1,4 +1,4 @@
-package gamecontroller;
+package gamecontrollerdefault;
 
 import java.io.IOException;
 

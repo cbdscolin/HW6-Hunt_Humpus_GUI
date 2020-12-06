@@ -18,7 +18,7 @@ import player.PlayerKillsWumpusException;
  */
 public class GameModel implements IGameModel {
 
-  private final IMaze maze;
+  private IMaze maze;
 
   /**
    * Initialises game model by using the maze passed in as parameter.
@@ -28,52 +28,108 @@ public class GameModel implements IGameModel {
     this.maze = maze;
   }
 
-  public String printMaze() {
-    return this.maze.printMaze();
+  /**
+   * Initializes empty game model. A maze has to be passed at a later point of time.
+   */
+  public GameModel() {
+  }
+
+  public void setMaze(IMaze maze) {
+    if (maze == null) {
+      throw new IllegalArgumentException("Null maze passed to game model");
+    }
+    this.maze = maze;
+  }
+
+  private boolean isMazeNull() {
+    return maze == null;
+  }
+
+  public String printMaze(boolean showBarriers) throws IllegalStateException {
+    if (isMazeNull()) {
+      throw new IllegalStateException("Maze is null in printMaze");
+    }
+    return this.maze.printMaze(showBarriers);
   }
 
   @Override
   public void removeWalls(Map<CreatureType, Integer> percentages, int totalPlayerArrows)
-          throws UnsupportedOperationException, IllegalArgumentException, PlayerKilledException {
+          throws UnsupportedOperationException, IllegalArgumentException,
+          PlayerKilledException, IllegalStateException {
+    if (isMazeNull()) {
+      throw new IllegalStateException("Maze is null in removeWalls");
+    }
     this.maze.removeWalls(percentages, totalPlayerArrows);
   }
 
   @Override
-  public MazePoint getPlayerCoordinates() {
-    return maze.getPlayerCoordinates();
+  public MazePoint getActivePlayerCoordinates() throws IllegalStateException {
+    if (isMazeNull()) {
+      throw new IllegalStateException("Maze is null in getActivePlayerCoordinates");
+    }
+    return maze.getActivePlayerCoordinates();
   }
 
   @Override
-  public List<Direction> getValidDirectionsForMovement() {
+  public List<Direction> getValidDirectionsForMovement() throws IllegalStateException {
+    if (isMazeNull()) {
+      throw new IllegalStateException("Maze is null in getValidDirectionsForMovement");
+    }
     return maze.getValidDirectionsForMovement();
   }
 
-  public boolean checkCreatureInAdjacentCells(CreatureType creatureType) {
-    MazePoint playerPos = getPlayerCoordinates();
+  public boolean checkCreatureInAdjacentCells(CreatureType creatureType) throws
+          IllegalStateException {
+    if (isMazeNull()) {
+      throw new IllegalStateException("Maze is null in checkCreatureInAdjacentCells");
+    }
+    MazePoint playerPos = getActivePlayerCoordinates();
     return this.maze.checkCreatureInAdjacentCells(playerPos, creatureType, null);
   }
 
   @Override
-  public boolean shootArrow(Direction dir, int power) throws
+  public boolean shootArrow(Direction dir, int power) throws IllegalStateException,
           PlayerKillsWumpusException, RecoverableException, PlayerKilledException {
-    MazePoint playerPos = getPlayerCoordinates();
+    if (isMazeNull()) {
+      throw new IllegalStateException("Maze is null in shootArrow");
+    }
+    MazePoint playerPos = getActivePlayerCoordinates();
     return maze.shootArrow(playerPos, dir, power);
   }
 
   @Override
   public void movePlayerInDirection(Direction direction)
-          throws PlayerKilledException, RecoverableException {
+          throws PlayerKilledException, RecoverableException, IllegalStateException {
+    if (isMazeNull()) {
+      throw new IllegalStateException("Maze is null in movePlayerInDirection");
+    }
     maze.movePlayerInDirection(direction);
   }
 
   @Override
   public boolean resultingCellHasCreature(MazePoint point, Direction dir,
-                                          CreatureType creatureType, int distance) {
+                                          CreatureType creatureType, int distance)
+          throws IllegalStateException {
+    if (isMazeNull()) {
+      throw new IllegalStateException("Maze is null in resultingCellHasCreature");
+    }
     return maze.resultingCellHasCreature(point, dir, creatureType, distance);
   }
 
   @Override
-  public MazePoint getExpectedMovementPosition(MazePoint point, Direction dir) {
+  public MazePoint getExpectedMovementPosition(MazePoint point, Direction dir) throws
+          IllegalStateException  {
+    if (isMazeNull()) {
+      throw new IllegalStateException("Maze is null in getExpectedMovementPosition");
+    }
     return this.maze.getExpectedMovementPosition(point, dir);
+  }
+
+  @Override
+  public int getActivePlayerIndex() throws IllegalStateException {
+    if (isMazeNull()) {
+      throw new IllegalStateException("Maze is null in getActivePlayerIndex");
+    }
+    return this.maze.getActivePlayerIndex();
   }
 }

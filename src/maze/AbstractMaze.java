@@ -42,7 +42,11 @@ public abstract class AbstractMaze implements IMaze {
 
   protected final Wall[] walls;
 
-  private MazePlayer player;
+  private List<MazePlayer> players;
+
+  private int nextPlayerIndex;
+
+  private final int playerCount;
 
   /**
    * Constructor that accepts random number generators, rows, column count in maze, start &
@@ -54,11 +58,12 @@ public abstract class AbstractMaze implements IMaze {
    *                            to random cell
    * @param totalColumns number of columns in maze
    * @param totalRows number of rows in maze
+   * @param playerCount
    * @throws IllegalArgumentException thrown when invalid null generators, total rows & columns
-   *        are used
+   *        are used and when player count is less than 1
    */
   protected AbstractMaze(Random wallGenerator, Random adversaryGenerator,
-                         Random movementGenerator, int totalColumns, int totalRows) throws
+                         Random movementGenerator, int totalColumns, int totalRows, int playerCount) throws
           IllegalArgumentException {
     if (totalColumns <= 0 || totalRows <= 0) {
       throw new IllegalArgumentException("Number of rows and columns in a maze can't be negative");
@@ -66,31 +71,24 @@ public abstract class AbstractMaze implements IMaze {
     if (wallGenerator == null || adversaryGenerator == null || movementGenerator == null) {
       throw new IllegalArgumentException("Bat, adversary or movement Generators can't be null\n");
     }
+    if (playerCount < 1) {
+      throw new IllegalArgumentException("Number of players can't be less than zero");
+    }
     this.wallGenerator = wallGenerator;
     this.adversaryGenerator = adversaryGenerator;
     this.movementGenerator = movementGenerator;
     this.cells = new Cell[totalRows][totalColumns];
     this.walls = new Wall[this.minimumWallsToRemove()];
     this.wallsRemoved = false;
+    this.players = new ArrayList<>(playerCount);
+    this.playerCount = playerCount;
+    this.nextPlayerIndex = 0;
     initCells();
   }
 
-  private boolean canAddGold(double value) {
-    int rows = getTotalRows();
-    int cols = getTotalColumns();
-    return (value / (double) (rows * cols)) < GOLD_PROBABILITY;
-  }
-
-  private boolean canAddThief(double value) {
-    int rows = getTotalRows();
-    int cols = getTotalColumns();
-    double curProb =  (value / (double) (rows * cols));
-    return curProb > GOLD_PROBABILITY && curProb < GOLD_PROBABILITY + THIEF_PROBABILITY;
-  }
-
   @Override
-  public String printMaze() {
-    return MazeUtils.render(cells, player);
+  public String printMaze(boolean showBarriers) {
+    return MazeUtils.render(cells, players, showBarriers);
   }
 
   private void initCells() {
@@ -99,13 +97,7 @@ public abstract class AbstractMaze implements IMaze {
     for (int i = 0; i < rows; i++) {
       for (int j = 0; j < columns; j++) {
         double value = adversaryGenerator.nextInt((rows * columns));
-        if (canAddGold(value)) {
-          this.cells[i][j] = new Cell(i, j);
-        } else if (canAddThief(value)) {
-          this.cells[i][j] = new Cell(i, j);
-        } else {
-          this.cells[i][j] = new Cell(i, j);
-        }
+        this.cells[i][j] = new Cell(i, j);
       }
     }
   }
@@ -195,31 +187,37 @@ public abstract class AbstractMaze implements IMaze {
     int totalRow = getTotalRows();
     int totalCol = getTotalColumns();
 
-    List<Cell> availableCells = getNonTunnelCells();
-    if (availableCells.size() <= 0) {
-      throw new IllegalStateException("No non-tunnel cells to place a player in the maze");
-    }
+    for (int iPlayerTurn = 0; iPlayerTurn < this.playerCount; iPlayerTurn++) {
+      List<Cell> availableCells = getNonTunnelCells().stream()
+              .filter(cell -> !Cell.canCellKillPlayer(cell))
+              .collect(Collectors.toList());
+      if (availableCells.size() <= 0) {
+        throw new IllegalStateException("No cells present to place a player without killing"
+                + " them");
+      }
 
-    int randomCellIndex = this.movementGenerator.nextInt(availableCells.size());
-    Cell playerCell = availableCells.get(randomCellIndex);
-    int playerStartX = playerCell.getRowPosition();
-    int playerStartY = playerCell.getColumnPosition();
+      int randomCellIndex = this.movementGenerator.nextInt(availableCells.size());
+      Cell playerCell = availableCells.get(randomCellIndex);
+      int playerStartX = playerCell.getRowPosition();
+      int playerStartY = playerCell.getColumnPosition();
 
-    if (playerStartX < 0 || playerStartX >= totalRow) {
-      throw new IllegalStateException("X start co-ordinates for player are invalid");
+      if (playerStartX < 0 || playerStartX >= totalRow) {
+        throw new IllegalStateException("X start co-ordinates for player are invalid");
+      }
+      if (playerStartY < 0 || playerStartY >= totalCol) {
+        throw new IllegalStateException("Y start co-ordinates for player are invalid");
+      }
+      if (this.cells[playerStartX][playerStartY].isTunnel()) {
+        throw new IllegalStateException("Cannot add player to a tunnel");
+      }
+      this.players.add(new MazePlayer(playerStartX, playerStartY, arrowCount, iPlayerTurn));
+      this.performInitCellAction(playerCell);
     }
-    if (playerStartY < 0 || playerStartY >= totalCol) {
-      throw new IllegalStateException("Y start co-ordinates for player are invalid");
-    }
-    if (this.cells[playerStartX][playerStartY].isTunnel()) {
-      throw new IllegalStateException("Cannot add player to a tunnel");
-    }
-    this.player = new MazePlayer(playerStartX, playerStartY, arrowCount);
-    this.performCellAction(playerCell);
   }
 
-  private void performCellAction(Cell playerCell) throws PlayerKilledException {
-    playerCell.performCellActions(player, this);
+  private void performInitCellAction(Cell playerCell) throws PlayerKilledException {
+    playerCell.performCellActions(players.get(this.nextPlayerIndex), this);
+    changePlayerTurn();
   }
 
   public boolean checkCreatureInAdjacentCells(MazePoint point, CreatureType creatureType,
@@ -261,8 +259,11 @@ public abstract class AbstractMaze implements IMaze {
   }
 
   private Cell getCellAtDistance(MazePoint point,
-                                    Direction arrowDirection, int distance) {
+                                 Direction arrowDirection, int distance, boolean markCellAsVisited) {
     Cell currentCell = this.cells[point.getXCoordinate()][point.getYCoordinate()];
+    if (markCellAsVisited) {
+      currentCell.markVisible();
+    }
     if (!currentCell.isTunnel()) {
       distance = distance - 1;
     }
@@ -277,7 +278,7 @@ public abstract class AbstractMaze implements IMaze {
       }
       nextPoint = arrowDirection.getNextPoint(point);
       nextPoint = wrapPoint(nextPoint);
-      return getCellAtDistance(nextPoint, arrowDirection, distance);
+      return getCellAtDistance(nextPoint, arrowDirection, distance, markCellAsVisited);
     }
     Direction revDirection = Direction.getInverseDirection(arrowDirection);
     List<Direction> nextDirections = validDirections.stream()
@@ -288,7 +289,11 @@ public abstract class AbstractMaze implements IMaze {
     }
     nextPoint = nextDirections.get(0).getNextPoint(point);
     nextPoint = wrapPoint(nextPoint);
-    return getCellAtDistance(nextPoint, nextDirections.get(0), distance);
+    return getCellAtDistance(nextPoint, nextDirections.get(0), distance, markCellAsVisited);
+  }
+
+  private void changePlayerTurn() {
+    this.nextPlayerIndex = (this.nextPlayerIndex + 1) % this.playerCount;
   }
 
   @Override
@@ -303,11 +308,12 @@ public abstract class AbstractMaze implements IMaze {
     if (!validDirections.contains(dir)) {
       throw new RecoverableException("Cannot shoot arrow in the direction of a wall");
     }
-    Cell finalCell = this.getCellAtDistance(point, dir, power + 1);
+    Cell finalCell = this.getCellAtDistance(point, dir, power + 1, false);
     if (finalCell != null && finalCell.hasCreature(CreatureType.WUMPUS)) {
       return true;
     }
-    player.reduceArrowCount();
+    players.get(nextPlayerIndex).reduceArrowCount();
+    changePlayerTurn();
     return false;
   }
 
@@ -432,16 +438,18 @@ public abstract class AbstractMaze implements IMaze {
   @Override
   public void movePlayerInDirection(Direction direction) throws IllegalArgumentException,
           IllegalStateException, PlayerKilledException, RecoverableException {
-    MazePoint currentPoint = player.getCurrentCoordinates();
-    Cell nextCell = this.getCellAtDistance(currentPoint, direction,2);
+    MazePlayer playerToMove = players.get(nextPlayerIndex);
+    MazePoint currentPoint = playerToMove.getCurrentCoordinates();
+    Cell nextCell = this.getCellAtDistance(currentPoint, direction,2, true);
     if (nextCell == null) {
       throw new RecoverableException("Cannot move player in the direction specified");
     }
     MazePoint newPosition = new MazePoint(nextCell.getRowPosition(), nextCell.getColumnPosition());
     newPosition = wrapPoint(newPosition);
-    player.setNewPosition(newPosition);
+    playerToMove.setNewPosition(newPosition);
     Cell newCell = cells[newPosition.getXCoordinate()][newPosition.getYCoordinate()];
-    newCell.performCellActions(player, this);
+    newCell.performCellActions(playerToMove, this);
+    changePlayerTurn();
   }
 
   private MazePoint wrapPoint(MazePoint point) throws IllegalStateException {
@@ -480,7 +488,7 @@ public abstract class AbstractMaze implements IMaze {
     if (cells[point.getXCoordinate()][point.getYCoordinate()].isTunnel()) {
       throw new UnsupportedOperationException("Cannot measure distance from a tunnel cell");
     }
-    Cell cell = getCellAtDistance(point, dir, 2);
+    Cell cell = getCellAtDistance(point, dir, 2, false);
     if (cell != null) {
       return wrapPoint(new MazePoint(cell.getRowPosition(), cell.getColumnPosition()));
     }
@@ -501,14 +509,13 @@ public abstract class AbstractMaze implements IMaze {
       throw new UnsupportedOperationException("Direction cannot be null when determining "
               + "distance from a position");
     }
-    Cell cell = getCellAtDistance(point, dir, distance);
+    Cell cell = getCellAtDistance(point, dir, distance, false);
     return cell != null && cell.hasCreature(creatureType);
   }
 
   @Override
   public String toString() {
-
-    return MazeUtils.render(cells, player);
+    return MazeUtils.render(cells, players, true);
   }
 
   public Random getMovementGenerator() {
@@ -521,14 +528,19 @@ public abstract class AbstractMaze implements IMaze {
   }
 
   @Override
-  public MazePoint getPlayerCoordinates() {
-    return player.getCurrentCoordinates();
+  public MazePoint getActivePlayerCoordinates() {
+    return players.get(nextPlayerIndex).getCurrentCoordinates();
   }
 
   @Override
   public List<Direction> getValidDirectionsForMovement() {
-    MazePoint playerPosition = this.player.getCurrentCoordinates();
+    MazePoint playerPosition = this.players.get(nextPlayerIndex).getCurrentCoordinates();
     Cell currentCell = this.cells[playerPosition.getXCoordinate()][playerPosition.getYCoordinate()];
     return currentCell.getSuggestionsForMovement();
+  }
+
+  @Override
+  public int getActivePlayerIndex() {
+    return this.nextPlayerIndex;
   }
 }

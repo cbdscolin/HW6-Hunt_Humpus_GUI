@@ -1,6 +1,7 @@
 package maze;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import graph.MazePoint;
@@ -16,19 +17,20 @@ public class MazeUtils {
 
   public static final char PLAYER = '@';
   public static final char GOAL = 'G';
-  public static final int CELL_LEFT_PADDING = 4;
+  public static final int CELL_LEFT_PADDING = 6;
   public static final int MIN_CELL_WIDTH = 4; // best to leave this at 4 or larger
   public static final int MAX_PERCENT = 100;
   public static final int BAT_PICK_PERCENTAGE = 50;
 
   /**
    * Renders a grid of maze cells as ASCII art. The grid is represented as an
-   * array of array of Cell. Uses Cell equals method to determine player position in a maze.
+   * array of array of Cell. Uses Cell equals method to determine players position in a maze.
    * @param grid the grid to render
-   * @param player a cell representing player's current location, can be null if there is no player
+   * @param players a cell representing player's current location, can be null if there is no players
+   * @param showBarriers
    * @return the ASCII art representation of the maze
    */
-  public static String render(Cell[][] grid, MazePlayer player) {
+  public static String render(Cell[][] grid, List<MazePlayer> players, boolean showBarriers) {
     if (grid == null || grid.length == 0 || grid[0].length == 0) {
       throw new IllegalArgumentException("Invalid grid");
     }
@@ -38,7 +40,7 @@ public class MazeUtils {
         maxCellWidth = Integer.max(maxCellWidth, c.toString().length());
       }
     }
-    maxCellWidth += 3;
+    maxCellWidth += 6;
     int numRows = grid.length;
     int numCols = grid[0].length;
     StringBuilder sb = new StringBuilder();
@@ -54,15 +56,18 @@ public class MazeUtils {
               + "-".repeat(sideLen)
       ).collect(Collectors.joining("+")));
       sb.append("+\n");
-
       for (int c = 0; c < cells.length; c++) {
+        StringBuilder newSb = new StringBuilder();
+
         Cell cell = cells[c];
         String cellContent = cell.toString();
-        if (player != null && new MazePoint(cell.getRowPosition(), cell.getColumnPosition())
-                .equals(player.getCurrentCoordinates())) {
-          cellContent += " P ";
+        MazePoint curPointNow = new MazePoint(cell.getRowPosition(), cell.getColumnPosition());
+        List<MazePlayer> matchingPlayers = players.stream().filter(player -> player.getCurrentCoordinates()
+                .equals(curPointNow)).collect(Collectors.toList());
+        for (MazePlayer matchPlayer: matchingPlayers) {
+          cellContent += " P" + (matchPlayer.getPlayerIndex() + 1) + " ";
         }
-        sb.append(!cell.hasWest() ? " " : "|").append(" ".repeat(CELL_LEFT_PADDING));
+        newSb.append(!cell.hasWest() ? " " : "|").append(" ".repeat(CELL_LEFT_PADDING));
         String paddedCellString;
         try {
           paddedCellString = " ".repeat(maxCellWidth).substring(cellContent.length())
@@ -71,9 +76,14 @@ public class MazeUtils {
           throw exp;
         }
         StringBuilder cellTemp = new StringBuilder(paddedCellString);
-        sb.append(cellTemp);
+        newSb.append(cellTemp);
         if (c == numCols - 1 && cell.hasEast()) {
-          sb.append("|");
+          newSb.append("|");
+        }
+        if (showBarriers || cell.isVisible()) {
+          sb.append(newSb.toString());
+        } else {
+          sb.append("/".repeat(newSb.toString().length()));
         }
       }
       sb.append("\n");

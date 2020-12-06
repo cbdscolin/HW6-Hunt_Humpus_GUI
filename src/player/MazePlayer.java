@@ -11,6 +11,8 @@ public class MazePlayer {
 
   private MazePoint currentCoordinates;
 
+  private final int playerIndex;
+
   private final int totalArrowCount;
 
   private int currentArrowCount;
@@ -21,20 +23,33 @@ public class MazePlayer {
    * Creates a player in a maze.
    * @param startX start x-coordinate
    * @param startY start y-coordinate
+   * @param playerIndex used to indicate the player out of list of players playing the game
    * @throws IllegalArgumentException thrown when negative start co-ordinates are used
    */
-  public MazePlayer(int startX, int startY, int arrowCount) throws IllegalArgumentException {
+  public MazePlayer(int startX, int startY, int arrowCount, int playerIndex) throws IllegalArgumentException {
     if (startX < 0 || startY < 0) {
       throw new IllegalArgumentException("Negative start coordinates can't be used");
     }
     if (arrowCount <= 0) {
       throw new IllegalArgumentException("Arrow count should be greater than zero");
     }
+    if (playerIndex < 0) {
+      throw new IllegalArgumentException("Player index can't be negative");
+    }
     this.startCoordinates = new MazePoint(startX, startY);
     this.currentCoordinates = new MazePoint(startX, startY);
     this.totalArrowCount = arrowCount;
     this.currentArrowCount = 0;
     this.isPlayerAlive = true;
+    this.playerIndex = playerIndex;
+  }
+
+  /**
+   * Returns the integer used to uniquely identify a player.
+   * @return the unique player index
+   */
+  public int getPlayerIndex() {
+    return playerIndex;
   }
 
   /**

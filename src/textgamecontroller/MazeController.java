@@ -1,8 +1,10 @@
-package gamecontroller;
+package textgamecontroller;
 
 import java.io.IOException;
 import java.util.Scanner;
 
+import gamecontrollerdefault.IMazeCommand;
+import gamecontrollerdefault.IMazeController;
 import gamemodel.IGameModel;
 import maze.MazeUtils;
 import mazeexceptions.RecoverableException;
@@ -38,10 +40,10 @@ public class MazeController implements IMazeController {
     this.model = model;
   }
 
-  private void printDebugTable(String enableTableDebug) throws IOException {
+  private void printDebugTable(String enableTableDebug, boolean showBarriers) throws IOException {
     //System.out.println(this.model.printMaze());
     if (YES_VALUE.equals(enableTableDebug)) {
-      this.output.append(this.model.printMaze()).append("\n");
+      this.output.append(this.model.printMaze(showBarriers)).append("\n");
     }
   }
 
@@ -55,7 +57,7 @@ public class MazeController implements IMazeController {
       output.append("Type Y or y to enable displaying table, press N otherwise\n");
       String enableTableDebug = scanner.next();
       enableTableDebug = MazeUtils.cleanString(enableTableDebug).toLowerCase();
-      printDebugTable(enableTableDebug);
+      printDebugTable(enableTableDebug, true);
       while (true) {
         IMazeCommand cmd = new ShowDirectionsCommand(model, output);
         cmd.execute();
@@ -74,7 +76,7 @@ public class MazeController implements IMazeController {
               throw new RecoverableException("Unknown option entered: " + shootMoveCh);
           }
           cmd.execute();
-          printDebugTable(enableTableDebug);
+          //printDebugTable(enableTableDebug, false);
         }
         catch (RecoverableException xp) {
           output.append(xp.getMessage() + "\n");
@@ -82,15 +84,16 @@ public class MazeController implements IMazeController {
       }
 
     } catch (PlayerKilledException exp) {
-      output.append("Player Lost !!!!\n");
+      output.append("Player "  + (model.getActivePlayerIndex() + 1)+ "  Lost !!!!\n");
       output.append(exp.getMessage()).append("\n");
     } catch (PlayerKillsWumpusException exp) {
-      output.append("Player Wins !!!!\n");
+      output.append("Player " + (model.getActivePlayerIndex() + 1)+ " Wins !!!!\n");
       output.append(exp.getMessage()).append("\n");
     } catch (UnrecoverableException | RecoverableException exp) {
       output.append(exp.getMessage()).append("\n");
+      exp.printStackTrace();
     }
-    output.append(model.printMaze());
+    output.append(model.printMaze(true));
     output.append("\n");
   }
 }

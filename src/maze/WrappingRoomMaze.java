@@ -21,24 +21,26 @@ public class WrappingRoomMaze extends NonWrappingRoomMaze {
   /**
    * Constructor that accepts random number generators, rows, column count in maze, start &
    * end co-ordinates to generate a non-wrapping room maze.
-   * @param extraInternalWallsToRemove extra walls that have to be removed
    * @param wallGenerator random number generator for Kruskal's algorithm
    * @param adversaryGenerator random number generator to add pits, bats to cells.
    * @param batMovementGenerator random number generator to help with bat moving a player
    *                             to random cell
    * @param totalColumns number of columns in maze
    * @param totalRows number of rows in maze
+   * @param extraInternalWallsToRemove extra walls that have to be removed
    * @param borderWallsToRemove the number of walls at the border to be removed. At-least
    *                            a value of will make the maze a wrapping maze.
+   * @param playerCount
    * @throws IllegalArgumentException thrown when invalid null generators, total rows & columns
    *        are used or trying to remove too many border walls
    */
   public WrappingRoomMaze(Random wallGenerator, Random adversaryGenerator,
                           Random batMovementGenerator, int totalColumns,
-                          int totalRows, int extraInternalWallsToRemove, int borderWallsToRemove)
+                          int totalRows, int extraInternalWallsToRemove, int borderWallsToRemove,
+                          int playerCount)
           throws IllegalArgumentException {
     super(wallGenerator, adversaryGenerator, batMovementGenerator, totalColumns,
-            totalRows, extraInternalWallsToRemove);
+            totalRows, extraInternalWallsToRemove, playerCount);
     if (borderWallsToRemove > getBorderWallsCount()) {
       throw new IllegalArgumentException("Trying to remove too many border walls");
     }

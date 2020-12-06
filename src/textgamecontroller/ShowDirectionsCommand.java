@@ -1,8 +1,9 @@
-package gamecontroller;
+package textgamecontroller;
 
 import java.io.IOException;
 import java.util.List;
 
+import gamecontrollerdefault.AbstractCommand;
 import gamemodel.IGameModel;
 import maze.Direction;
 import mazecreatures.CreatureType;

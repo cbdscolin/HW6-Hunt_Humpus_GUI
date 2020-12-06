@@ -73,8 +73,9 @@ public interface IMaze {
    * Prints the maze by displaying all the cells.
    *
    * @return the view of the maze
+   * @param showBarriers
    */
-  String printMaze();
+  String printMaze(boolean showBarriers);
 
   /**
    * Function returns the number of rows present in the maze.
@@ -146,7 +147,7 @@ public interface IMaze {
    * Returns the current position of the player in a maze.
    * @return the current position of the player in a maze.
    */
-  MazePoint getPlayerCoordinates();
+  MazePoint getActivePlayerCoordinates();
 
   /**
    * Returns a list of directions (N, E, W, S) a player can move from the current cell.
@@ -175,5 +176,11 @@ public interface IMaze {
    * @return  the end point where a player stops.
    */
   MazePoint getExpectedMovementPosition(MazePoint point, Direction dir);
+
+  /**
+   * Returns the integer identifier of the player whose turn is next.
+   * @return identifier for player.
+   */
+  int getActivePlayerIndex();
 
 }

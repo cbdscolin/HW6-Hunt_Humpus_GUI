@@ -5,6 +5,7 @@ import java.util.Map;
 
 import graph.MazePoint;
 import maze.Direction;
+import maze.IMaze;
 import mazecreatures.CreatureType;
 import mazeexceptions.RecoverableException;
 import player.PlayerKilledException;
@@ -17,10 +18,17 @@ import player.PlayerKillsWumpusException;
 public interface IGameModel {
 
   /**
+   * The maze used by the player to play the game is set in this function.
+   * @param maze maze used for this game
+   */
+  public void setMaze(IMaze maze);
+
+  /**
    * Function that prints the maze along with the position of bats, pits & wumpus.
    * @return the view of maze containing bats, pits, player & wumpus.
+   * @param showBarriers
    */
-  public String printMaze();
+  public String printMaze(boolean showBarriers);
 
   /**
    * Function used to generate a perfect maze by keeping only those edges that are necessary to make
@@ -38,7 +46,7 @@ public interface IGameModel {
    * Returns the players current position.
    * @return the players current position.
    */
-  MazePoint getPlayerCoordinates();
+  MazePoint getActivePlayerCoordinates();
 
   /**
    * Returns a list of directions (N, E, W, S) a player can move from the current cell.
@@ -98,4 +106,10 @@ public interface IGameModel {
    * @return  the end point where a player stops.
    */
   MazePoint getExpectedMovementPosition(MazePoint point, Direction dir);
+
+  /**
+   * Returns the integer identifier of the player whose turn is next.
+   * @return identifier for player.
+   */
+  int getActivePlayerIndex();
 }
