@@ -183,4 +183,10 @@ public interface IMaze {
    */
   int getActivePlayerIndex();
 
+  /**
+   * Returns the images to be displayed at each cell.
+   * @return images to be displayed at each cell.
+   */
+  public String[][] getImagesToDisplayInCells();
+
 }

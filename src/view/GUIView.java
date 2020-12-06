@@ -1,16 +1,9 @@
 package view;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-
 import guicontroller.IMazeGUIController;
 
 /**
@@ -35,7 +28,7 @@ public class GUIView extends JFrame implements IView {
 
   private static final int SPINNER_X_POS = 500;
 
-  private JTextArea errorMessage;
+  private final JTextArea errorMessage;
 
   private Container commandContainer;
 
@@ -76,8 +69,8 @@ public class GUIView extends JFrame implements IView {
     setSize(800, 600);
     setLocation(50, 50);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    this.setLayout(null);
-    //this.setLayout(new GridLayout());
+    //this.setLayout(null);
+    this.setLayout(new BorderLayout());
     this.createInputFrame();
 
     Dimension dim = new Dimension(800, 600);
@@ -87,35 +80,46 @@ public class GUIView extends JFrame implements IView {
     this.setVisible(true);
   }
 
-  private JLabel getImageLabel() {
+  private JLabel getImageLabel(String imagePath) {
     JLabel label = null;
     try {
       label = new JLabel();
-      BufferedImage bufImage =  ImageIO.read(getClass().getResource("/resources/htw/player.png"));
+      label.setBounds(0, 0, 102, 96);
+      Image bufImage =  ImageIO.read(getClass().getResource(imagePath));
+      bufImage = bufImage.getScaledInstance(label.getWidth(), label.getHeight(),
+              Image.SCALE_AREA_AVERAGING);
       label.setIcon(new ImageIcon(bufImage));
-      label.setBounds(0, 0, 64, 64);
+      //label.setBorder(new EmptyBorder(0, 0, 0,0));
     } catch (Exception exception) {
-      System.out.println(exception.getMessage());
-      exception.printStackTrace();
+      this.showErrorMessage("Cannot display maze: " + exception.getMessage());
     }
     return label;
   }
 
   private void initMazeContainer() {
-
     mazeContainer = new Container();
-    JScrollPane scrollPane = new JScrollPane();
-    mazeContainer.setBounds(0, 0, 600, 600);
-    mazeContainer.setLayout(new GridLayout(4, 4));
-    for (int ii = 0; ii < 4; ii++) {
-      for (int jj = 0; jj < 4; jj++) {
-        //mazeContainer.add(new JLabel("ey"));
-        JLabel label = getImageLabel();
+    scrollPane = new JScrollPane();
+    mazeContainer.setLayout(null);
+    scrollPane = new JScrollPane(mazeContainer, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+            ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+    this.add(scrollPane);
+    this.scrollPane.setVisible(false);
+    this.mazeContainer.setVisible(false);
+  }
+
+  public void sendCellImagesToView(String[][] images) {
+    mazeContainer.removeAll();
+    int rows = images.length;
+    int cols = images[0].length;
+    this.scrollPane.setBounds(50, 50, 550, 450);
+    GridLayout layout = new GridLayout(rows, cols, 1, 1);
+    mazeContainer.setLayout(layout);
+    for (int ii = 0; ii < rows; ii++) {
+      for (int jj = 0; jj < cols; jj++) {
+        JLabel label = getImageLabel(images[ii][jj]);
         mazeContainer.add(label);
       }
     }
-    this.add(mazeContainer);
-    mazeContainer.setVisible(false);
   }
 
   private JTextArea createTextArea() {
@@ -144,8 +148,6 @@ public class GUIView extends JFrame implements IView {
     this.errorMessage.setVisible(false);
   }
 
-
-
   public void showInputScreen() {
     this.inputContainer.setVisible(true);
   }
@@ -154,9 +156,10 @@ public class GUIView extends JFrame implements IView {
     this.inputContainer.setVisible(false);
   }
 
-  public void displayMaze() {
+  public void showMaze() {
     this.inputContainer.setVisible(false);
     this.mazeContainer.setVisible(true);
+    this.scrollPane.setVisible(true);
     pack();
   }
 

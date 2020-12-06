@@ -74,6 +74,8 @@ public class MazeGUIController implements IMazeController, IMazeGUIController {
     }
     view.hideErrorMessage();
     view.hideInputScreen();
-    view.displayMaze();
+    view.showMaze();
+    view.sendCellImagesToView(model.getImagesToDisplayInCells());
+    System.out.println(model.printMaze(true));
   }
 }

@@ -112,4 +112,11 @@ public interface IGameModel {
    * @return identifier for player.
    */
   int getActivePlayerIndex();
+
+  /**
+   * Returns the images to be displayed at each cell.
+   * @return images to be displayed at each cell.
+   */
+  public String[][] getImagesToDisplayInCells();
+
 }

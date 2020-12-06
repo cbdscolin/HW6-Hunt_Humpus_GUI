@@ -35,6 +35,12 @@ public interface IView {
    * Displays the maze. Each cell can be a tunnel/non-tunnel containing bat, wumpus, player,
    * pit or smell pit or wumpus.
    */
-  public void displayMaze();
+  public void showMaze();
+
+  /**
+   * Sends cell images to be displayed by the view.
+   * @param images images to be displayed by the view
+   */
+  void sendCellImagesToView(String[][] images);
 
 }

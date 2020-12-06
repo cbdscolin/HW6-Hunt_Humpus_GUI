@@ -141,11 +141,15 @@ public abstract class AbstractMaze implements IMaze {
     return row;
   }
 
-  /**
-   * Gets the next index for a given column. If the maze is wrapping then modulus is used.
-   * @param column current index of column
-   * @return next index of column.
-   */
+  public String[][] getImagesToDisplayInCells() {
+    return MazeUtils.renderImages(cells);
+  }
+
+    /**
+     * Gets the next index for a given column. If the maze is wrapping then modulus is used.
+     * @param column current index of column
+     * @return next index of column.
+     */
   public int getNextColumnIndex(int column) {
     int totalCols = getTotalColumns();
     if (isWrappingMaze()) {

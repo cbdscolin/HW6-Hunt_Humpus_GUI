@@ -52,6 +52,10 @@ public class GameModel implements IGameModel {
     return this.maze.printMaze(showBarriers);
   }
 
+  public String[][] getImagesToDisplayInCells() {
+    return maze.getImagesToDisplayInCells();
+  }
+
   @Override
   public void removeWalls(Map<CreatureType, Integer> percentages, int totalPlayerArrows)
           throws UnsupportedOperationException, IllegalArgumentException,

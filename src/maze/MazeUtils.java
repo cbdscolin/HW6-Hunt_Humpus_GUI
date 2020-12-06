@@ -1,6 +1,8 @@
 package maze;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,12 +17,22 @@ import player.MazePlayer;
  */
 public class MazeUtils {
 
-  public static final char PLAYER = '@';
-  public static final char GOAL = 'G';
   public static final int CELL_LEFT_PADDING = 6;
   public static final int MIN_CELL_WIDTH = 4; // best to leave this at 4 or larger
   public static final int MAX_PERCENT = 100;
   public static final int BAT_PICK_PERCENTAGE = 50;
+
+  public static String[][] renderImages(Cell[][] grid) {
+    String[][] cellImages = new String[grid.length][grid[0].length];
+    for (int ii = 0; ii < grid.length; ii++) {
+      for (int jj = 0; jj < grid[0].length; jj++) {
+        Cell cell = grid[ii][jj];
+        cellImages[ii][jj] = MazeImageUtils.getImageForCellDirections(
+                cell.getSuggestionsForMovement());
+      }
+    }
+    return cellImages;
+  }
 
   /**
    * Renders a grid of maze cells as ASCII art. The grid is represented as an
@@ -62,8 +74,9 @@ public class MazeUtils {
         Cell cell = cells[c];
         String cellContent = cell.toString();
         MazePoint curPointNow = new MazePoint(cell.getRowPosition(), cell.getColumnPosition());
-        List<MazePlayer> matchingPlayers = players.stream().filter(player -> player.getCurrentCoordinates()
-                .equals(curPointNow)).collect(Collectors.toList());
+        List<MazePlayer> matchingPlayers = (players != null ? players.stream().filter(player ->
+                player.getCurrentCoordinates().equals(curPointNow)).collect(Collectors.toList()) :
+                new ArrayList<>());
         for (MazePlayer matchPlayer: matchingPlayers) {
           cellContent += " P" + (matchPlayer.getPlayerIndex() + 1) + " ";
         }

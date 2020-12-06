@@ -165,6 +165,14 @@ public class Cell {
     this.walls.remove(direction);
   }
 
+  /**
+   * Returns the list of walls surrounded by the cells.
+   * @return list of walls around this cell
+   */
+  public List<Direction> getWalls() {
+    return walls;
+  }
+
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder(" ");
