@@ -116,7 +116,8 @@ public interface IGameModel {
   /**
    * Returns the images to be displayed at each cell.
    * @return images to be displayed at each cell.
+   * @param showBarriers
    */
-  public String[][] getImagesToDisplayInCells();
+  public String[][] getImagesToDisplayInCells(boolean showBarriers);
 
 }

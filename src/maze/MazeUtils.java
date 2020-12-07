@@ -22,8 +22,8 @@ public class MazeUtils {
   public static final int MAX_PERCENT = 100;
   public static final int BAT_PICK_PERCENTAGE = 50;
 
-  public static String[][] renderImages(Cell[][] grid, boolean showBarriers, IMaze maze) {
-    showBarriers = true;
+  public static String[][] renderImages(Cell[][] grid, boolean showBarriers, IMaze maze,
+                                        List<MazePlayer> players) {
     String[][] cellImages = new String[grid.length][grid[0].length];
     for (int ii = 0; ii < grid.length; ii++) {
       for (int jj = 0; jj < grid[0].length; jj++) {
@@ -33,7 +33,10 @@ public class MazeUtils {
           imageUrl = MazeImageUtils.getCellNotVisitedImage();
         } else {
           MazePoint currentPoint = new MazePoint(ii, jj);
-          if (cell.isTunnel()) {
+          if (players.stream().anyMatch(player -> player.getCurrentCoordinates()
+                  .equals(currentPoint))) {
+            imageUrl = MazeImageUtils.getCellPlayerImage();
+          } else if (cell.isTunnel()) {
             imageUrl = MazeImageUtils.getImageForCellDirections(cell.getSuggestionsForMovement());
           } else if (cell.hasCreature(CreatureType.WUMPUS)) {
             imageUrl = MazeImageUtils.getCellWumpusImage();
@@ -48,8 +51,8 @@ public class MazeUtils {
           } else {
             imageUrl = MazeImageUtils.getImageForCellDirections(cell.getSuggestionsForMovement());
           }
-          cellImages[ii][jj] = imageUrl;
         }
+        cellImages[ii][jj] = imageUrl;
       }
     }
     return cellImages;

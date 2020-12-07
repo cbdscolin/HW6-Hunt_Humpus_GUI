@@ -1,10 +1,14 @@
 package view;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import guicontroller.IMazeGUIController;
+import maze.Direction;
 
 /**
  * Class that handles functionalities related to view component in mvc design of hunt the wumpus
@@ -28,11 +32,21 @@ public class GUIView extends JFrame implements IView {
 
   private static final int SPINNER_X_POS = 500;
 
+  private boolean isControlPressed;
+
+  private JLabel playerTurnLabel;
+
+  private JLabel gameStatusLabel;
+
+  private JLabel validDirectionsLabel;
+
   private Container commandContainer;
 
   private Container inputContainer;
 
   private JPanel mazePanel;
+
+  private JPanel mazeCommandPanel;
 
   private Container mazeContainer;
 
@@ -63,7 +77,7 @@ public class GUIView extends JFrame implements IView {
     }
 
     this.mazeController = mazeController;
-
+    this.isControlPressed = false;
     setSize(800, 600);
     setLocation(20, 20);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -74,6 +88,7 @@ public class GUIView extends JFrame implements IView {
     Dimension dim = new Dimension(800, 600);
     this.setPreferredSize(dim);
     initMazeContainer();
+    this.addKeyListeners();
     this.pack();
     this.setVisible(true);
   }
@@ -82,7 +97,7 @@ public class GUIView extends JFrame implements IView {
     JLabel label = null;
     try {
       label = new JLabel();
-      label.setBounds(0, 0, 102, 96);
+      label.setBounds(0, 0, 64, 64);
       Image bufImage =  ImageIO.read(getClass().getResource(imagePath));
       bufImage = bufImage.getScaledInstance(label.getWidth(), label.getHeight(),
               Image.SCALE_AREA_AVERAGING);
@@ -94,37 +109,131 @@ public class GUIView extends JFrame implements IView {
     return label;
   }
 
-  private void initCommandContainer() {
-    commandContainer = new Container();
-    commandContainer.add(new JLabel("Hey there"));
-    commandContainer.add(new JButton("button"));
-    commandContainer.setVisible(true);
-    commandContainer.setLayout(new FlowLayout());
-    commandContainer.setBounds(0, 0, 600, 600);
-    this.add(commandContainer);
-    commandContainer.setVisible(true);
-  }
-
   private void initMazeContainer() {
+    mazeCommandPanel = new JPanel();
+    GridBagConstraints gbc = new GridBagConstraints();
+    gbc.gridx = 0;
+    gbc.gridy = 0;
+    gbc.weightx = 0.7;
+    gbc.weighty = 0.7;
+    gbc.fill = GridBagConstraints.BOTH;
+    GridBagLayout gbLayout = new GridBagLayout();
+
+    mazeCommandPanel.setLayout(gbLayout);
+    mazeCommandPanel.setBounds(0, 0, 800, 600);
+
     mazeContainer = new Container();
     mazePanel = new JPanel();
     scrollPane = new JScrollPane();
     mazeContainer.setLayout(null);
-    mazePanel.setBounds(20, 20, 600, 600);
+    scrollPane.setPreferredSize(new Dimension(400, 400));
+    mazeCommandPanel.setBorder(new EmptyBorder(50, 50, 50, 50));
     mazePanel.add(mazeContainer);
     scrollPane = new JScrollPane(mazePanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
             ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-    this.add(scrollPane);
-    this.scrollPane.setVisible(false);
-    this.mazePanel.setVisible(false);
+    mazeCommandPanel.add(scrollPane, gbc);
+    this.add(mazeCommandPanel);
+    this.mazeCommandPanel.setVisible(false);
+    commandContainer = new Container();
+    gameStatusLabel = getCustomJLabel(32, Color.RED);
+    playerTurnLabel = getCustomJLabel(24, Color.BLACK);
+    validDirectionsLabel = getCustomJLabel(30, Color.BLACK);
+    commandContainer.add(gameStatusLabel);
+    commandContainer.add(validDirectionsLabel);
+    commandContainer.add(playerTurnLabel);
+    commandContainer.setVisible(true);
+    commandContainer.setBounds(0, 0, 200, 500);
+    gbc.gridx = 1;
+    gbc.gridy = 0;
+    gbc.weightx = 0.15;
+    gbc.weighty = 0.15;
+    mazeCommandPanel.add(commandContainer, gbc);
+    commandContainer.setLayout(new BoxLayout(commandContainer, BoxLayout.Y_AXIS));
+  }
+
+  private int getArrowPower() {
+    String arrowPower = JOptionPane.showInputDialog("Enter the power of arrow greater than 0: ");
+    try {
+      return Integer.parseInt(arrowPower);
+    } catch (Exception exception) {
+      showErrorMessage("Enter an integer: " + exception.getMessage());
+    }
+    return 0;
+  }
+
+  private JLabel getCustomJLabel(int size, Color color) {
+    JLabel label = new JLabel();
+    Font f = new Font(null, Font.PLAIN, size);
+    label.setFont(f);
+    label.setForeground(color);
+    return label;
+  }
+
+  private void addKeyListeners() {
+    this.requestFocus();
+    this.setFocusable(true);
+    this.addKeyListener(new KeyListener() {
+      @Override
+      public void keyTyped(KeyEvent e) {
+      }
+
+      @Override
+      public synchronized void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
+          isControlPressed = true;
+          System.out.println("Pressed\n");
+        }
+      }
+
+      @Override
+      public synchronized void keyReleased(KeyEvent e) {
+        if (!mazeContainer.isEnabled() || !mazeCommandPanel.isVisible()) {
+          return;
+        }
+        Direction direction = null;
+        if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
+          isControlPressed = false;
+          System.out.println("Released\n");
+
+        }
+        if (e.getKeyCode() == KeyEvent.VK_W) {
+          direction = Direction.NORTH;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_S) {
+          direction = Direction.SOUTH;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_A) {
+          direction = Direction.WEST;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_D) {
+          direction = Direction.EAST;
+        }
+        if (direction != null) {
+          if (!isControlPressed) {
+            mazeController.movePlayerInDirection(direction);
+          } else {
+            isControlPressed = false;
+            int power = getArrowPower();
+            mazeController.shootPlayerInDirection(direction, power);
+          };
+        }
+      }
+    });
+  }
+
+  @Override
+  public void endGameWithMessage(String message) {
+    gameStatusLabel.setText(message.toUpperCase());
+    validDirectionsLabel.setVisible(false);
+    this.mazeContainer.setEnabled(false);
   }
 
   public void sendCellImagesToView(String[][] images) {
     mazeContainer.removeAll();
     int rows = images.length;
     int cols = images[0].length;
-    this.scrollPane.setBounds(20, 20, 550, 450);
-    GridLayout layout = new GridLayout(rows, cols, 1, 1);
+    //this.scrollPane.setBounds(20, 20, 550, 450);
+    GridLayout layout = new GridLayout(rows, cols);
     mazeContainer.setLayout(layout);
     for (int ii = 0; ii < rows; ii++) {
       for (int jj = 0; jj < cols; jj++) {
@@ -132,32 +241,49 @@ public class GUIView extends JFrame implements IView {
         mazeContainer.add(label);
       }
     }
-    //initCommandContainer();
   }
 
-  private JTextArea createTextArea() {
-    JTextArea textArea = new JTextArea(2, 30);
-    textArea.setFont(textArea.getFont().deriveFont(19f));
+  private JTextArea getTextArea(int fontSize, Color color) {
+    JTextArea textArea = new JTextArea(2, 2);
+    JScrollPane scrollPane = new JScrollPane( textArea );
+    scrollPane.setBounds(0, 0, 20, 10);
+    Font font = new Font(null, Font.PLAIN, fontSize);
+    textArea.setFont(font);
     textArea.setWrapStyleWord(true);
-    textArea.setVisible(false);
+    //textArea.setLayout(new FlowLayout());
+    //textArea.setVisible(false);
     textArea.setLineWrap(true);
     textArea.setOpaque(false);
     textArea.setEditable(false);
     textArea.setFocusable(false);
-    textArea.setForeground(Color.RED);
+    textArea.setForeground(color);
     textArea.setFont(UIManager.getFont("Label.font"));
     textArea.setBorder(UIManager.getBorder("Label.border"));
-    textArea.setBounds(60, 30, 600, 30);
+    commandContainer.add(scrollPane);
+    //textArea.setBounds(0, 0, 50, 30);
     return textArea;
   }
 
   public void showErrorMessage(String message) {
     JOptionPane.showMessageDialog(this, message, "Error",
             JOptionPane.ERROR_MESSAGE);
- }
-
-  public void hideErrorMessage() {
   }
+
+  public void showGameStatusMessage(String message) {
+    this.gameStatusLabel.setVisible(true);
+    this.gameStatusLabel.setText(message);
+  }
+
+  public void showValidDirectionsMessage(String message) {
+    this.validDirectionsLabel.setVisible(true);
+    this.validDirectionsLabel.setText(message);
+  }
+
+  public void showPlayerTurnMessage(String message) {
+    this.playerTurnLabel.setVisible(true);
+    this.playerTurnLabel.setText(message);
+  }
+
 
   public void showInputScreen() {
     this.inputContainer.setVisible(true);
@@ -168,8 +294,9 @@ public class GUIView extends JFrame implements IView {
   }
 
   public void showMaze() {
+    this.mazeContainer.setEnabled(true);
     this.inputContainer.setVisible(false);
-    this.mazePanel.setVisible(true);
+    this.mazeCommandPanel.setVisible(true);
     this.scrollPane.setVisible(true);
     pack();
   }

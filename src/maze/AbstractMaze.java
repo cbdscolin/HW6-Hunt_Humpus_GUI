@@ -141,8 +141,8 @@ public abstract class AbstractMaze implements IMaze {
     return row;
   }
 
-  public String[][] getImagesToDisplayInCells() {
-    return MazeUtils.renderImages(cells, false, this);
+  public String[][] getImagesToDisplayInCells(boolean showBarriers) {
+    return MazeUtils.renderImages(cells, showBarriers, this, players);
   }
 
     /**

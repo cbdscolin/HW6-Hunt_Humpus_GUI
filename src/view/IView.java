@@ -26,10 +26,11 @@ public interface IView {
   void showErrorMessage(String message);
 
   /**
-   * Hides error message on the screen..
-   * @param message error message
+   * Displays a message and ends the game. The game can end when either wumpus is killed or
+   * the player is killed.
+   * @param message message showing the winner and the loser of the game
    */
-  public void hideErrorMessage();
+  void endGameWithMessage(String message);
 
   /**
    * Displays the maze. Each cell can be a tunnel/non-tunnel containing bat, wumpus, player,
@@ -42,5 +43,24 @@ public interface IView {
    * @param images images to be displayed by the view
    */
   void sendCellImagesToView(String[][] images);
+
+  /**
+   * Displays the current status of the game. The status can be active if the game is playable
+   * or inactive a player has won.
+   * @param message game status message
+   */
+  void showGameStatusMessage(String message);
+
+  /**
+   * Displays the valid direction of movement or shooting for the player whose turn is next.
+   * @param message message consisting of directions of movement.
+   */
+  void showValidDirectionsMessage(String message);
+
+  /**
+   * Displays the index of the player who has the chance to move or shoot next.
+   * @param message index of player whose turn is next
+   */
+  void showPlayerTurnMessage(String message);
 
 }

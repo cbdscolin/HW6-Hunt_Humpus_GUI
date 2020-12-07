@@ -52,8 +52,8 @@ public class GameModel implements IGameModel {
     return this.maze.printMaze(showBarriers);
   }
 
-  public String[][] getImagesToDisplayInCells() {
-    return maze.getImagesToDisplayInCells();
+  public String[][] getImagesToDisplayInCells(boolean showBarriers) {
+    return maze.getImagesToDisplayInCells(false);
   }
 
   @Override

@@ -1,5 +1,6 @@
 package guicontroller;
 
+import maze.Direction;
 import view.IView;
 
 /**
@@ -39,4 +40,19 @@ public interface IMazeGUIController {
    * @param view view in the MVC design pattern
    */
   void setView(IView view);
+
+  /**
+   * Moves players in the direction specified. If the direction is invalid, then the action cannot
+   * be carried out.
+   * @param direction direction in which players to move
+   */
+  void movePlayerInDirection(Direction direction);
+
+  /**
+   * Shoots arrow in the direction specified with the specified arrow power.
+   * @param direction direction to shoot
+   * @param arrowPower power of shot
+   */
+  void shootPlayerInDirection(Direction direction, int arrowPower);
+
 }
