@@ -3,6 +3,7 @@ package guicontroller;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 
 import gamemodel.IGameModel;
@@ -109,19 +110,19 @@ public class MazeGUIController implements IMazeGUIController {
       view.showErrorMessage(outputMessage.getStatusMessage());
       view.sendCellImagesToView(model.getImagesToDisplayInCells(false));
     } else if (outputMessage.isPlayerKilled()) {
-      StringBuilder output = new StringBuilder();
-      output.append("Player " + (model.getActivePlayerIndex() + 1) + " has lost!\n");
       view.sendCellImagesToView(model.getImagesToDisplayInCells(true));
-      view.endGameWithMessage(output.toString());
+      view.endGameWithMessage("Player " + (model.getActivePlayerIndex() + 1) + " has lost!\n");
       view.showPlayerTurnMessage(outputMessage.getStatusMessage());
     } else if (outputMessage.isWumpusKilled()) {
-      StringBuilder output = new StringBuilder();
-      output.append("Player " + (model.getActivePlayerIndex() + 1) + " has won!\n");
       view.sendCellImagesToView(model.getImagesToDisplayInCells(true));
-      view.endGameWithMessage(output.toString());
+      view.endGameWithMessage("Player " + (model.getActivePlayerIndex() + 1) + " has won!\n");
       view.showPlayerTurnMessage(outputMessage.getStatusMessage());
     } else {
       view.sendCellImagesToView(model.getImagesToDisplayInCells(false));
+      if (outputMessage.getStatusMessage() != null && !outputMessage.getStatusMessage().isEmpty())
+      {
+        view.showErrorMessage(outputMessage.getStatusMessage());
+      }
       this.sendPlayerTurnMessage();
       this.sendValidDirectionsMessage();
     }

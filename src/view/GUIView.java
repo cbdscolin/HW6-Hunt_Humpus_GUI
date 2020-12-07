@@ -360,7 +360,7 @@ public class GUIView extends JFrame implements IView {
     JSpinner internalWallScrollBar = new JSpinner(internalWallsModel);
     internalWallScrollBar.setBounds(SPINNER_X_POS, startPos + 2 * INPUT_MAX_PADDING, SPINNER_WIDTH, SPINNER_HEIGHT);
 
-    JLabel externalWallLabel = new JLabel("Number of external walls to be removed: ");
+    JLabel externalWallLabel = new JLabel("Number of border walls to be removed: ");
     externalWallLabel.setBounds(LABEL_X_POS, startPos + 3 * INPUT_MAX_PADDING, LABEL_WIDTH, LABEL_HEIGHT);
     externalWallsModel = new SpinnerNumberModel(0, 0, Integer.MAX_VALUE,
             1);

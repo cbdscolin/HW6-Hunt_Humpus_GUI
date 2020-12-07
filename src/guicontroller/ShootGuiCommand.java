@@ -43,7 +43,7 @@ public class ShootGuiCommand implements IMazeGUICommand {
       return new CommandOutputMessage(false, "Error while shooting arrow: "
               + exception.getMessage(), false, false);
     }
-    return new CommandOutputMessage(true, null,
+    return new CommandOutputMessage(true, "Arrow missed Wumpus!",
             false, false);
   }
 }
