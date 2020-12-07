@@ -142,7 +142,7 @@ public abstract class AbstractMaze implements IMaze {
   }
 
   public String[][] getImagesToDisplayInCells() {
-    return MazeUtils.renderImages(cells);
+    return MazeUtils.renderImages(cells, false, this);
   }
 
     /**

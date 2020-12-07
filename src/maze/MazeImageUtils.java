@@ -40,6 +40,11 @@ public class MazeImageUtils {
             ROOT_IMAGES_PATH + "NSEW.png");
   }
 
+  /**
+   * Function returns the image to be shown in cell that has not walls in some directions.
+   * @param directions the directions which don't have any walls
+   * @return image which has no walls in the directions passed in parameter
+   */
   public static String getImageForCellDirections(List<Direction> directions) {
     Set<Direction> sortedDirections = Set.copyOf(directions);
     if (wallImages == null) {
@@ -49,5 +54,33 @@ public class MazeImageUtils {
       return wallImages.get(sortedDirections);
     }
     return null;
+  }
+
+  public static String getCellNotVisitedImage() {
+    return ROOT_IMAGES_PATH +  "black.png";
+  }
+
+  public static String getCellWumpusImage() {
+    return ROOT_IMAGES_PATH +  "wumpus.png";
+  }
+
+  public static String getCellBatsImage() {
+    return ROOT_IMAGES_PATH +  "bats.png";
+  }
+
+  public static String getCellPitImage() {
+    return ROOT_IMAGES_PATH +  "pit.png";
+  }
+
+  public static String getCellPlayerImage() {
+    return ROOT_IMAGES_PATH +  "player.png";
+  }
+
+  public static String getCellWumpusSmellImage() {
+    return ROOT_IMAGES_PATH +  "stench.png";
+  }
+
+  public static String getCellPitSmellImage() {
+    return ROOT_IMAGES_PATH +  "breeze.png";
   }
 }

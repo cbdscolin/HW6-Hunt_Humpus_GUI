@@ -2,11 +2,11 @@ package maze;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import graph.MazePoint;
+import mazecreatures.CreatureType;
 import player.MazePlayer;
 
 /**
@@ -22,13 +22,34 @@ public class MazeUtils {
   public static final int MAX_PERCENT = 100;
   public static final int BAT_PICK_PERCENTAGE = 50;
 
-  public static String[][] renderImages(Cell[][] grid) {
+  public static String[][] renderImages(Cell[][] grid, boolean showBarriers, IMaze maze) {
+    showBarriers = true;
     String[][] cellImages = new String[grid.length][grid[0].length];
     for (int ii = 0; ii < grid.length; ii++) {
       for (int jj = 0; jj < grid[0].length; jj++) {
         Cell cell = grid[ii][jj];
-        cellImages[ii][jj] = MazeImageUtils.getImageForCellDirections(
-                cell.getSuggestionsForMovement());
+        String imageUrl;
+        if (!cell.isVisible() && !showBarriers) {
+          imageUrl = MazeImageUtils.getCellNotVisitedImage();
+        } else {
+          MazePoint currentPoint = new MazePoint(ii, jj);
+          if (cell.isTunnel()) {
+            imageUrl = MazeImageUtils.getImageForCellDirections(cell.getSuggestionsForMovement());
+          } else if (cell.hasCreature(CreatureType.WUMPUS)) {
+            imageUrl = MazeImageUtils.getCellWumpusImage();
+          } else if (cell.hasCreature(CreatureType.PIT)) {
+            imageUrl = MazeImageUtils.getCellPitImage();
+          } else if (maze.checkCreatureInAdjacentCells(currentPoint, CreatureType.WUMPUS,
+                  null)) {
+            imageUrl = MazeImageUtils.getCellWumpusSmellImage();
+          } else if (maze.checkCreatureInAdjacentCells(currentPoint, CreatureType.PIT,
+                  null)) {
+            imageUrl = MazeImageUtils.getCellPitSmellImage();
+          } else {
+            imageUrl = MazeImageUtils.getImageForCellDirections(cell.getSuggestionsForMovement());
+          }
+          cellImages[ii][jj] = imageUrl;
+        }
       }
     }
     return cellImages;

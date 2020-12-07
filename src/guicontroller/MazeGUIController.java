@@ -72,7 +72,6 @@ public class MazeGUIController implements IMazeController, IMazeGUIController {
       view.showErrorMessage("Cannot construct maze: " + exception.getMessage());
       return;
     }
-    view.hideErrorMessage();
     view.hideInputScreen();
     view.showMaze();
     view.sendCellImagesToView(model.getImagesToDisplayInCells());

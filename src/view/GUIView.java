@@ -28,11 +28,11 @@ public class GUIView extends JFrame implements IView {
 
   private static final int SPINNER_X_POS = 500;
 
-  private final JTextArea errorMessage;
-
   private Container commandContainer;
 
   private Container inputContainer;
+
+  private JPanel mazePanel;
 
   private Container mazeContainer;
 
@@ -63,11 +63,9 @@ public class GUIView extends JFrame implements IView {
     }
 
     this.mazeController = mazeController;
-    errorMessage = this.createTextArea();
-    this.add(errorMessage);
 
     setSize(800, 600);
-    setLocation(50, 50);
+    setLocation(20, 20);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     //this.setLayout(null);
     this.setLayout(new BorderLayout());
@@ -96,22 +94,36 @@ public class GUIView extends JFrame implements IView {
     return label;
   }
 
+  private void initCommandContainer() {
+    commandContainer = new Container();
+    commandContainer.add(new JLabel("Hey there"));
+    commandContainer.add(new JButton("button"));
+    commandContainer.setVisible(true);
+    commandContainer.setLayout(new FlowLayout());
+    commandContainer.setBounds(0, 0, 600, 600);
+    this.add(commandContainer);
+    commandContainer.setVisible(true);
+  }
+
   private void initMazeContainer() {
     mazeContainer = new Container();
+    mazePanel = new JPanel();
     scrollPane = new JScrollPane();
     mazeContainer.setLayout(null);
-    scrollPane = new JScrollPane(mazeContainer, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+    mazePanel.setBounds(20, 20, 600, 600);
+    mazePanel.add(mazeContainer);
+    scrollPane = new JScrollPane(mazePanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
             ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
     this.add(scrollPane);
     this.scrollPane.setVisible(false);
-    this.mazeContainer.setVisible(false);
+    this.mazePanel.setVisible(false);
   }
 
   public void sendCellImagesToView(String[][] images) {
     mazeContainer.removeAll();
     int rows = images.length;
     int cols = images[0].length;
-    this.scrollPane.setBounds(50, 50, 550, 450);
+    this.scrollPane.setBounds(20, 20, 550, 450);
     GridLayout layout = new GridLayout(rows, cols, 1, 1);
     mazeContainer.setLayout(layout);
     for (int ii = 0; ii < rows; ii++) {
@@ -120,6 +132,7 @@ public class GUIView extends JFrame implements IView {
         mazeContainer.add(label);
       }
     }
+    //initCommandContainer();
   }
 
   private JTextArea createTextArea() {
@@ -139,13 +152,11 @@ public class GUIView extends JFrame implements IView {
   }
 
   public void showErrorMessage(String message) {
-    errorMessage.setText(message);
-    this.errorMessage.setVisible(true);
-  }
+    JOptionPane.showMessageDialog(this, message, "Error",
+            JOptionPane.ERROR_MESSAGE);
+ }
 
   public void hideErrorMessage() {
-    errorMessage.setText("");
-    this.errorMessage.setVisible(false);
   }
 
   public void showInputScreen() {
@@ -158,7 +169,7 @@ public class GUIView extends JFrame implements IView {
 
   public void showMaze() {
     this.inputContainer.setVisible(false);
-    this.mazeContainer.setVisible(true);
+    this.mazePanel.setVisible(true);
     this.scrollPane.setVisible(true);
     pack();
   }
