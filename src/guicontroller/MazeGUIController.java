@@ -24,6 +24,12 @@ public class MazeGUIController implements IMazeGUIController {
 
   private final IGameModel model;
 
+  private long wallGenerator;
+
+  private long adversaryGenerator;
+
+  private long batMovementGenerator;
+
   private IView view;
 
   public MazeGUIController(IGameModel model) {
@@ -31,6 +37,9 @@ public class MazeGUIController implements IMazeGUIController {
       throw new IllegalArgumentException("Null model passed to controller");
     }
     this.model = model;
+    this.wallGenerator = 0;
+    this.adversaryGenerator = 0;
+    this.batMovementGenerator = 0;
   }
 
   @Override
@@ -50,41 +59,40 @@ public class MazeGUIController implements IMazeGUIController {
 
   @Override
   public void createMaze(int rows, int columns, int internalWalls, int externalWalls,
-                         int playerCount, int pitPercentage, int batPercentage, int arrowCount) {
+                         int playerCount, int pitPercentage, int batPercentage, int arrowCount, boolean usePast) {
     IMaze maze;
-    try {
-      if (externalWalls > 0) {
-        maze = new WrappingRoomMaze(new Random(), new Random(), new Random(),
-                columns, rows, internalWalls, externalWalls, playerCount);
-      } else {
-        maze = new NonWrappingRoomMaze(new Random(), new Random(), new Random(),
-                columns, rows, internalWalls, playerCount);
-      }
-      model.setMaze(maze);
-      Map<CreatureType, Integer> data = new LinkedHashMap<>();
-      data.put(CreatureType.BAT, batPercentage);
-      data.put(CreatureType.PIT, pitPercentage);
-      model.removeWalls(data, arrowCount);
-    } catch (Exception exception) {
-      view.showErrorMessage("Cannot construct maze: " + exception.getMessage());
-      return;
+    if (!usePast || (batMovementGenerator == 0 && adversaryGenerator == 0 &&
+            wallGenerator == 0)) {
+      wallGenerator =  Math.round(Math.random());
+      adversaryGenerator = Math.round(Math.random());
+      batMovementGenerator = Math.round(Math.random());
     }
+    if (externalWalls > 0) {
+      maze = new WrappingRoomMaze(new Random(wallGenerator), new Random(adversaryGenerator),
+              new Random(batMovementGenerator), columns, rows, internalWalls, externalWalls,
+              playerCount);
+    } else {
+      maze = new NonWrappingRoomMaze(new Random(wallGenerator), new Random(adversaryGenerator),
+              new Random(batMovementGenerator), columns, rows, internalWalls, playerCount);
+    }
+    model.setMaze(maze);
     view.hideInputScreen();
     view.showMaze();
-    view.sendCellImagesToView(model.getImagesToDisplayInCells(false));
-    view.showGameStatusMessage("Game Active");
-    sendPlayerTurnMessage();
-    sendValidDirectionsMessage();
-    System.out.println(model.printMaze(true));
+    view.showGameStatusMessage("GAME ACTIVE");
+    Map<CreatureType, Integer> data = new LinkedHashMap<>();
+    data.put(CreatureType.BAT, batPercentage);
+    data.put(CreatureType.PIT, pitPercentage);
+    IMazeGUICommand command = new RemoveWallsGuiCommand(model, data, arrowCount);
+    executeAction(command);
   }
 
   private void sendPlayerTurnMessage() {
-    view.showPlayerTurnMessage("Player " + (model.getActivePlayerIndex() + 1) + "'s turn");
+    view.showPlayerTurnMessage("Player " + (model.getActivePlayerIndex() + 1) + "'s turn now!");
   }
 
   private void sendValidDirectionsMessage() {
     List<Direction> directions = model.getValidDirectionsForMovement();
-    StringBuilder builder = new StringBuilder("Directions:  ");
+    StringBuilder builder = new StringBuilder("Player can move:  ");
     for (int ii = 0; ii < directions.size(); ii++) {
       if (ii >= (directions.size() - 1)) {
         builder.append(directions.get(ii).getDirectionString());

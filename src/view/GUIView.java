@@ -70,6 +70,24 @@ public class GUIView extends JFrame implements IView {
 
   private final IMazeGUIController mazeController;
 
+  private JTextField infoField;
+
+  private int rows;
+
+  private int columns;
+
+  private int externalWalls;
+
+  private int internalWalls;
+
+  private int playerCount;
+
+  private int batPercent;
+
+  private int pitPercent;
+
+  private int arrowCount;
+
   public GUIView(String ctx, IMazeGUIController mazeController) {
     super(ctx);
     if (mazeController == null) {
@@ -85,20 +103,22 @@ public class GUIView extends JFrame implements IView {
     this.setLayout(new BorderLayout());
     this.createInputFrame();
 
-    Dimension dim = new Dimension(800, 600);
-    this.setPreferredSize(dim);
+    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    this.setPreferredSize(screenSize);
     initMazeContainer();
     this.addKeyListeners();
     this.pack();
     this.setVisible(true);
+    this.rows = 0;
+    this.columns = 0;
   }
 
-  private JLabel getImageLabel(String imagePath) {
+  private JLabel getImageLabel(Image bufImage) {
     JLabel label = null;
     try {
       label = new JLabel();
       label.setBounds(0, 0, 64, 64);
-      Image bufImage =  ImageIO.read(getClass().getResource(imagePath));
+      //Image bufImage =  ImageIO.read(getClass().getResource(imagePath));
       bufImage = bufImage.getScaledInstance(label.getWidth(), label.getHeight(),
               Image.SCALE_AREA_AVERAGING);
       label.setIcon(new ImageIcon(bufImage));
@@ -148,6 +168,16 @@ public class GUIView extends JFrame implements IView {
     gbc.weightx = 0.15;
     gbc.weighty = 0.15;
     mazeCommandPanel.add(commandContainer, gbc);
+    infoField = new JTextField();
+    infoField.setText("   Press w, a, s or d key to move players. Press ctrl and w, a,"
+            + " s or d together to shoot. Press q to restart the game! Player 1 is marked as"
+            + " black circle.");
+    infoField.setEditable(false);
+    infoField.setFont(new Font(null, Font.BOLD, 12));
+    gbc.gridx = 0;
+    gbc.gridy = 1;
+    gbc.gridwidth = 2;
+    mazeCommandPanel.add(infoField, gbc);
     commandContainer.setLayout(new BoxLayout(commandContainer, BoxLayout.Y_AXIS));
   }
 
@@ -181,20 +211,20 @@ public class GUIView extends JFrame implements IView {
       public synchronized void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
           isControlPressed = true;
-          System.out.println("Pressed\n");
         }
       }
 
       @Override
       public synchronized void keyReleased(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_Q) {
+          showInputScreen();
+        }
         if (!mazeContainer.isEnabled() || !mazeCommandPanel.isVisible()) {
           return;
         }
         Direction direction = null;
         if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
           isControlPressed = false;
-          System.out.println("Released\n");
-
         }
         if (e.getKeyCode() == KeyEvent.VK_W) {
           direction = Direction.NORTH;
@@ -228,7 +258,7 @@ public class GUIView extends JFrame implements IView {
     this.mazeContainer.setEnabled(false);
   }
 
-  public void sendCellImagesToView(String[][] images) {
+  public void sendCellImagesToView(Image[][] images) {
     mazeContainer.removeAll();
     int rows = images.length;
     int cols = images[0].length;
@@ -284,9 +314,10 @@ public class GUIView extends JFrame implements IView {
     this.playerTurnLabel.setText(message);
   }
 
-
   public void showInputScreen() {
     this.inputContainer.setVisible(true);
+    this.mazeCommandPanel.setVisible(false);
+    this.mazeContainer.setEnabled(false);
   }
 
   public void hideInputScreen() {
@@ -379,20 +410,35 @@ public class GUIView extends JFrame implements IView {
     addToInputContainer(arrowCountScrollBar);
 
     JButton createMazeButton = new JButton("Create Maze");
-    createMazeButton.addActionListener(e -> {
-      mazeController.createMaze(rowModel.getNumber().intValue(), colModel.getNumber().intValue(),
-              internalWallsModel.getNumber().intValue(), externalWallsModel.getNumber().intValue(),
-              playerCountModel.getNumber().intValue(), pitPercentModel.getNumber().intValue(),
-              batPercentModel.getNumber().intValue(), arrowCountModel.getNumber().intValue());
-    });
+    JCheckBox checkBox = new JCheckBox("Repeat previous maze");
+    checkBox.setBorderPaintedFlat(true);
+    checkBox.setBounds(400, 470, 200, 100);
+    createMazeButton.addActionListener(e -> createMaze(checkBox.isSelected()));
     createMazeButton.setLayout(null);
     createMazeButton.setBounds(100, 500, 200, 30);
     createMazeButton.setAlignmentX(CENTER_ALIGNMENT);
+    addToInputContainer(checkBox);
     addToInputContainer(createMazeButton);
     inputContainer.setLayout(new BorderLayout());
     inputContainer.setBounds(0, 0, 600, 600);
     this.add(inputContainer);
   }
+
+  private void createMaze(boolean usePast) {
+    if (!usePast || (rows == 0 || columns == 0)) {
+      rows = rowModel.getNumber().intValue();
+      columns = colModel.getNumber().intValue();
+      internalWalls = internalWallsModel.getNumber().intValue();
+      externalWalls = externalWallsModel.getNumber().intValue();
+      playerCount = playerCountModel.getNumber().intValue();
+      batPercent = batPercentModel.getNumber().intValue();
+      pitPercent = pitPercentModel.getNumber().intValue();
+      arrowCount = arrowCountModel.getNumber().intValue();
+    }
+    mazeController.createMaze(rows, columns, internalWalls, externalWalls, playerCount,
+            pitPercent, batPercent, arrowCount, usePast);
+  }
+
 
   private void addToInputContainer(JComponent component) {
     if ((component instanceof JLabel)) {

@@ -1,5 +1,6 @@
 package maze;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -141,7 +142,7 @@ public abstract class AbstractMaze implements IMaze {
     return row;
   }
 
-  public String[][] getImagesToDisplayInCells(boolean showBarriers) {
+  public Image[][] getImagesToDisplayInCells(boolean showBarriers) {
     return MazeUtils.renderImages(cells, showBarriers, this, players);
   }
 
@@ -310,7 +311,7 @@ public abstract class AbstractMaze implements IMaze {
     }
     List<Direction> validDirections = currentCell.getSuggestionsForMovement();
     if (!validDirections.contains(dir)) {
-      throw new RecoverableException("Cannot shoot arrow in the direction of a wall");
+      throw new RecoverableException("Cannot shoot arrow in the direction of a wall, try again");
     }
     Cell finalCell = this.getCellAtDistance(point, dir, power + 1, false);
     if (finalCell != null && finalCell.hasCreature(CreatureType.WUMPUS)) {
@@ -446,7 +447,7 @@ public abstract class AbstractMaze implements IMaze {
     MazePoint currentPoint = playerToMove.getCurrentCoordinates();
     Cell nextCell = this.getCellAtDistance(currentPoint, direction,2, true);
     if (nextCell == null) {
-      throw new RecoverableException("Cannot move player in the direction specified");
+      throw new RecoverableException("Cannot move player in the direction specified, try again");
     }
     MazePoint newPosition = new MazePoint(nextCell.getRowPosition(), nextCell.getColumnPosition());
     newPosition = wrapPoint(newPosition);

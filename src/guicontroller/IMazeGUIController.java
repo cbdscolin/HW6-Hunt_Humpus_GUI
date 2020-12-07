@@ -31,9 +31,10 @@ public interface IMazeGUIController {
    * @param pitPercentage percentage of cells that have pits
    * @param batPercentage percentage of cells that have bats
    * @param arrowCount number of arrows
+   * @param usePast
    */
   void createMaze(int rows, int columns, int internalWalls, int externalWalls,
-                   int playerCount, int pitPercentage, int batPercentage, int arrowCount);
+                  int playerCount, int pitPercentage, int batPercentage, int arrowCount, boolean usePast);
 
   /**
    * Sets view for this controller.

@@ -14,6 +14,11 @@ public class MazeImageUtils {
 
   private static final String ROOT_IMAGES_PATH = "/resources/htw_images/";
 
+  private static final String ROOT_SECOND_IMAGES_PATH = "/resources/htw/";
+
+  private static final String DOWNLOAD_IMAGES_PATH = "/resources/extras/";
+
+
   private static Map<Set<Direction>, String> wallImages;
 
   private static void initNonTunnelImages() {
@@ -72,15 +77,22 @@ public class MazeImageUtils {
     return ROOT_IMAGES_PATH +  "pit.png";
   }
 
-  public static String getCellPlayerImage() {
-    return ROOT_IMAGES_PATH +  "player.png";
+  public static String getCellPlayerOneImage() {
+    return DOWNLOAD_IMAGES_PATH + "download_circle.png";
+    //return ROOT_IMAGES_PATH +  "player.png";
+  }
+
+  public static String getCellPlayerTwoImage() {
+    return DOWNLOAD_IMAGES_PATH + "download_blue_circle.png";
   }
 
   public static String getCellWumpusSmellImage() {
-    return ROOT_IMAGES_PATH +  "stench.png";
+    return ROOT_SECOND_IMAGES_PATH + "wumpus-nearby.png";
+    //return ROOT_IMAGES_PATH +  "stench.png";
   }
 
   public static String getCellPitSmellImage() {
-    return ROOT_IMAGES_PATH +  "breeze.png";
+    return ROOT_SECOND_IMAGES_PATH + "slime-pit-nearby.png";
+    //return ROOT_IMAGES_PATH +  "breeze.png";
   }
 }

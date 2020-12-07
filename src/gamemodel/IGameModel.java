@@ -1,5 +1,6 @@
 package gamemodel;
 
+import java.awt.*;
 import java.util.List;
 import java.util.Map;
 
@@ -118,6 +119,6 @@ public interface IGameModel {
    * @return images to be displayed at each cell.
    * @param showBarriers
    */
-  public String[][] getImagesToDisplayInCells(boolean showBarriers);
+  public Image[][] getImagesToDisplayInCells(boolean showBarriers);
 
 }

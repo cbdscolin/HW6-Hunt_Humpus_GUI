@@ -1,5 +1,6 @@
 package gamemodel;
 
+import java.awt.*;
 import java.util.List;
 import java.util.Map;
 
@@ -52,8 +53,8 @@ public class GameModel implements IGameModel {
     return this.maze.printMaze(showBarriers);
   }
 
-  public String[][] getImagesToDisplayInCells(boolean showBarriers) {
-    return maze.getImagesToDisplayInCells(false);
+  public Image[][] getImagesToDisplayInCells(boolean showBarriers) {
+    return maze.getImagesToDisplayInCells(showBarriers);
   }
 
   @Override

@@ -1,9 +1,15 @@
 package maze;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import javax.imageio.ImageIO;
 
 import graph.MazePoint;
 import mazecreatures.CreatureType;
@@ -22,40 +28,88 @@ public class MazeUtils {
   public static final int MAX_PERCENT = 100;
   public static final int BAT_PICK_PERCENTAGE = 50;
 
-  public static String[][] renderImages(Cell[][] grid, boolean showBarriers, IMaze maze,
-                                        List<MazePlayer> players) {
-    String[][] cellImages = new String[grid.length][grid[0].length];
+  public static Image[][] renderImages(Cell[][] grid, boolean showBarriers, IMaze maze,
+                                       List<MazePlayer> players) {
+    Image[][] cellImages = new Image[grid.length][grid[0].length];
     for (int ii = 0; ii < grid.length; ii++) {
       for (int jj = 0; jj < grid[0].length; jj++) {
         Cell cell = grid[ii][jj];
-        String imageUrl;
+        List<String> allImages = new ArrayList<>();
+
         if (!cell.isVisible() && !showBarriers) {
-          imageUrl = MazeImageUtils.getCellNotVisitedImage();
+          allImages.add(MazeImageUtils.getCellNotVisitedImage());
         } else {
           MazePoint currentPoint = new MazePoint(ii, jj);
-          if (players.stream().anyMatch(player -> player.getCurrentCoordinates()
-                  .equals(currentPoint))) {
-            imageUrl = MazeImageUtils.getCellPlayerImage();
-          } else if (cell.isTunnel()) {
-            imageUrl = MazeImageUtils.getImageForCellDirections(cell.getSuggestionsForMovement());
-          } else if (cell.hasCreature(CreatureType.WUMPUS)) {
-            imageUrl = MazeImageUtils.getCellWumpusImage();
-          } else if (cell.hasCreature(CreatureType.PIT)) {
-            imageUrl = MazeImageUtils.getCellPitImage();
-          } else if (maze.checkCreatureInAdjacentCells(currentPoint, CreatureType.WUMPUS,
-                  null)) {
-            imageUrl = MazeImageUtils.getCellWumpusSmellImage();
-          } else if (maze.checkCreatureInAdjacentCells(currentPoint, CreatureType.PIT,
-                  null)) {
-            imageUrl = MazeImageUtils.getCellPitSmellImage();
-          } else {
-            imageUrl = MazeImageUtils.getImageForCellDirections(cell.getSuggestionsForMovement());
+          Optional<MazePlayer> cellPlayer = players.stream().filter(player -> player.getCurrentCoordinates()
+                  .equals(currentPoint)).findFirst();
+          if (cellPlayer.isPresent()) {
+            if (cellPlayer.get().getPlayerIndex() == 0) {
+              allImages.add(MazeImageUtils.getCellPlayerOneImage());
+            } else {
+              allImages.add(MazeImageUtils.getCellPlayerTwoImage());
+            }
           }
+          if (!cell.isTunnel()) {
+            if (cell.hasCreature(CreatureType.WUMPUS)) {
+              allImages.add(MazeImageUtils.getCellWumpusImage());
+            }
+            if (cell.hasCreature(CreatureType.PIT)) {
+              allImages.add(MazeImageUtils.getCellPitImage());
+            }
+            if (cell.hasCreature(CreatureType.BAT)) {
+              allImages.add(MazeImageUtils.getCellBatsImage());
+            }
+            if (maze.checkCreatureInAdjacentCells(currentPoint, CreatureType.WUMPUS,
+                    null)) {
+              allImages.add(MazeImageUtils.getCellWumpusSmellImage());
+            }
+            if (maze.checkCreatureInAdjacentCells(currentPoint, CreatureType.PIT,
+                    null)) {
+              allImages.add(MazeImageUtils.getCellPitSmellImage());
+            }
+          }
+          allImages.add(MazeImageUtils.getImageForCellDirections(cell.getSuggestionsForMovement()));
         }
-        cellImages[ii][jj] = imageUrl;
+        cellImages[ii][jj] = overlayImages(allImages);
       }
     }
     return cellImages;
+  }
+
+  private static Image overlayImages(List<String> images) {
+    if (images.size() <= 0) {
+      return null;
+    }
+    BufferedImage imgA = null;
+    int ii = 0;
+    try {
+      imgA = ImageIO.read(MazeUtils.class.getResource(images.get(ii)));
+      for (ii = 1; ii < images.size(); ii++) {
+        BufferedImage imgB = ImageIO.read(MazeUtils.class.getResource(images.get(ii)));
+        if (true) {
+          float alpha = 0.5f;
+          int compositeRule = AlphaComposite.SRC_OVER;
+          AlphaComposite ac;
+          int imgW = imgA.getWidth();
+          int imgH = imgA.getHeight();
+          BufferedImage overlay = new BufferedImage(imgW, imgH, BufferedImage.TYPE_INT_ARGB);
+          Graphics2D g = overlay.createGraphics();
+          ac = AlphaComposite.getInstance(compositeRule, alpha);
+          g.drawImage(imgA, 0, 0, null);
+          g.setComposite(ac);
+          g.drawImage(imgB, 0, 0, null);
+          g.setComposite(ac);
+          g.dispose();
+          imgA = overlay;
+        } else {
+          System.err.println("Dimension mismatch ");
+        }
+      }
+    } catch (Exception ignored) {
+      System.out.println("Exception in image overlay: " + ignored.getMessage()
+            + images.get(ii));
+    }
+    return imgA;
   }
 
   /**

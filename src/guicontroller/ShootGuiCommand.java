@@ -3,7 +3,6 @@ package guicontroller;
 import gamemodel.IGameModel;
 import maze.Direction;
 import player.PlayerKilledException;
-import player.PlayerKillsWumpusException;
 
 /**
  * The class that is used to handle the action where a player shoots the wumpus with a certain
@@ -41,7 +40,7 @@ public class ShootGuiCommand implements IMazeGUICommand {
       return new CommandOutputMessage(true, exception.getMessage(), true,
               false);
     } catch (Exception exception) {
-      return new CommandOutputMessage(true, "Error while shooting arrow: "
+      return new CommandOutputMessage(false, "Error while shooting arrow: "
               + exception.getMessage(), false, false);
     }
     return new CommandOutputMessage(true, null,

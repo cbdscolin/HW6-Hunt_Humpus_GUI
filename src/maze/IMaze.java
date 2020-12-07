@@ -1,6 +1,7 @@
 package maze;
 
 
+import java.awt.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -188,6 +189,6 @@ public interface IMaze {
    * @return images to be displayed at each cell.
    * @param showBarriers
    */
-  public String[][] getImagesToDisplayInCells(boolean showBarriers);
+  public Image[][] getImagesToDisplayInCells(boolean showBarriers);
 
 }

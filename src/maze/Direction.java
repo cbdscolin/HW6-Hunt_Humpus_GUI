@@ -10,10 +10,10 @@ import graph.MazePoint;
  */
 public enum Direction {
 
-  NORTH("N", -1, 0),
-  EAST("E", 0, 1),
-  SOUTH("S", 1, 0),
-  WEST("W", 0, -1);
+  NORTH("North", -1, 0),
+  EAST("East", 0, 1),
+  SOUTH("South", 1, 0),
+  WEST("West", 0, -1);
 
   private final String directionString;
 
@@ -37,22 +37,6 @@ public enum Direction {
                     .getYCoordinate());
     return newPoint;
 
-  }
-
-  /**
-   * Returns the enumeration type for a given direction.
-   * @param data direction
-   * @return enumeration represented by the specified direction
-   * @throws IllegalArgumentException when invaid direction is passed.
-   */
-  public static Direction getEnumerationForString(String data) throws IllegalArgumentException {
-    for (Direction direction: Direction.values()) {
-      if (direction.getDirectionString().equals(data)) {
-        return direction;
-      }
-    }
-    throw new IllegalArgumentException("Invalid direction passed for which "
-            + " cannot find any enumeration");
   }
 
   public MazePoint getMovementPoint() {

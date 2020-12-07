@@ -1,4 +1,7 @@
 package view;
+
+import java.awt.*;
+
 /**
  * Interface that outlines the functionality of View in MVC design of Hunt the Wumpus console
  * game.
@@ -42,7 +45,7 @@ public interface IView {
    * Sends cell images to be displayed by the view.
    * @param images images to be displayed by the view
    */
-  void sendCellImagesToView(String[][] images);
+  void sendCellImagesToView(Image[][] images);
 
   /**
    * Displays the current status of the game. The status can be active if the game is playable
