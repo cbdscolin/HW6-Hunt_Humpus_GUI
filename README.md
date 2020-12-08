@@ -46,7 +46,7 @@ is forced to reenter the options if such case arises. However, a player may be a
 1. In the GUI mode, the controller tries to get input from the user again if it finds that the user inputs can kill the player even before they decide to do an action. However sometimes this is not possible and the model forces the player to a cell
 where they may get killed. This can happen when a player may be asigned to a cell with bats and the bats may carry the player to a cell with pits or wumpus and end up killing them.
 
-2. The following icons are used:
+2. The following icons are used to represent players, bat, pit, wumpus, stench and breeze:
     - Player 1
     ![Player 1](./src/resources/extras/download_circle.png) 
     - Plaeyr 2
@@ -59,6 +59,10 @@ where they may get killed. This can happen when a player may be asigned to a cel
     ![Wumpus](./src/resources/htw_images/wumpus.png)
     - Pit 
     ![Pit](./src/resources/htw_images/pit.png)
+    - Bat
+    ![Bat](./src/resources/htw_images/bats.png)
+   
+ 
 
 
 
