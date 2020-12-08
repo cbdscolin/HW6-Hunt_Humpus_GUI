@@ -1,62 +1,55 @@
-Demo Runs: 
+# Hunt the Wumpus game
 
-demo_1.txt contains a run when a bat moves a player to a ranodm cell.
+##### Running in text mode
 
-demo_2.txt contains a run when a player dies by falling into a pit.
+Use `java -jar HW6-Hunt_Humpus_GUI.jar --text` command
+Demo runs for --text input: 
+1. demo1.txt: shows player killed by wumpus in 2 player mode.
+2. demo2.txt: show player killing a wumpus in 2 player mode.
+Assumptions: 
+3. demo3.txt: shows player carried away by bats.
+4. demo4.txt: shows player killed by pits.
 
-demo_3.txt contains a run when a player dies as Wumpus eats them.
+##### Running in GUI mode:
+Use `java -jar HW6-Hunt_Humpus_GUI.jar --gui` command
 
-demo_4.txt contains a run when a player kills the Wumpus in the game.
+1. `Input_Screen.png:` This is the first screen that you see. Enter the various parameters for the maze. Enter the number of rows, columns, players, number of arrows provided to each player, the percentage of bats and bits in this screen. Enter the number of internal walls to be removed to make the perfact maze non-wrapping maze. Enter the number of border walls to be removed to make the maze a wrapping maze.
+2. The checkbox `Repeat previous maze` can be checked to play the last maze generated. If the maze is the first maze created, then this option is disregarded. Next press `Create Maze` button to start a game.
+3. `Maze_screen.png:` This is the screen where players can move and shoot the wumpus. The status of the game and current players turn is displayed at the right side of this screen. Use the following commands to play the game.
+    - Use **w** key to move the player towards North. 
+    - Use **s** key to move the player towards South.
+    - Use **a** key to move the player towards West.
+    - Use **d** key to move the player towards East.
+    - If you want to shoot an arrow, press and hold **Control** key and then press
+        **w**, **s**, **a** or **d** key and then enter an integer value in the popup screen shown which appears as shown in `Shoot_arrow.png` image.
+    - To start a new game while on this screen press **q** key.
+    
+**All parts of this assignment are completed**
 
-Run the program using java -jar HW5-Hunt_Wumpus.jar
+#### Assumptions:
+1. When program is run in text mode, it assumes that the game ends when any one of the two players is killed, even though the other player is alive. However the program when run in gui mode, continues the game until any one player wins or the wumpus kills all of them.
+2. Shooting or moving in a invalid direction is not valid. When player tries such a move they don't lose their turn and continue to play till they perform a valid move. 
+3. The distribution of bats and pits in the maze is decided based on percentage instead of probability. A number between 0 and 100 is sent and the number of cells that are not tunnels have bats and pits in the cells based on this percentage.
 
-Use integers to give inputs to the controller when requested. The directions can be specified using 
-the alphabet N, S, E, W. The operations to shoot and move may be given using alpabets m (for moving)
-or s (for shooting).
+4. LinkedHashMap is used in tests while adding a map containing the distribution percentage of bats and pits to have an ordering when the tests run. Adding other types of maps that don't have an internal order can result in random responses and mazes.
 
-There is an option to disable displaying the maze, that contains the position of player, pits, bats
-the wumpus after each move and shoot command.
+6. A player may get killed as soon as the game starts. The game tries to allocate a starting position to a player first by finding cells that are safe. The safe cells don't have any pits or wumpus. However, in text mode if it doens't find a cell then
+it assigns the player to a random cell and they may get killed. In gui mode, the user
+is forced to reenter the options if such case arises. However, a player may be asigned to a cell with bats and the bats may carry the player to a cell with pits or wumpus and end up killing them.
 
-When the text - "Do you want to view the table with Wumpus/Player/Pit positions?:
-Type Y or y to enable displaying table, press N otherwise" appears press a key such as N or n. This
-disables displaying the maze after each move. Once the game ends (when player wins or loses) the
-final maze is displayed with the position of wumpus, player, bats and pits.
+7. A bat may drop a player to a cellthat contains a bat. The second bat then again may pick the player and drop them in another random cell.
 
-Differences between Mazes assingment:
+8. There is a limit on the number of internal walls and border walls that can be removed. If the parameter passed to the model is incorrect, then the model simply throws an exception instead of continuing and the controller prompts new input.
 
-The mazes assignment did not have implementation related to room mazes and wrapping mazes.
-The current assingment has those. The unneccessary gold and thief functionality and the relevant 
-test cases are removed. A perfect maze is represented by the abstract maze class and can be 
-created by using the constructor of the class NonWrappingRoomMaze.
 
-Apart from this, these are the assumptions made:
+#### Design Changes:
+1. In the GUI mode, the controller tries to get input from the user again if it finds that the user inputs can kill the player even before they decide to do an action. However sometimes this is not possible and the model forces the player to a cell
+where they may get killed. This can happen when a player may be asigned to a cell with bats and the bats may carry the player to a cell with pits or wumpus and end up killing them.
 
-1. After an object to create wrapping and non-wrapping mazes is created removeWalls() function has to be 
-called. This function though can be called multiple time has no effect. The function receives a map
-which consists of the percentage distribution of bats and pits in the maze. This can be null or the the key 
-related to a specific creature (bat/pit) can be 0 to avoid adding any bats and pits to the maze.
+2. The following icons are used:
+    - ![Player 1](/src/resources/extras/black_circle.png) 
 
-2. The distribution of bats and pits in the maze is decided based on percentage instead of probability. 
-A number betwene 0 and 100 is sent and the number of cells that are not tunnels have bats and pits based 
-on this percentage.
 
-3. Only 1 bat can be added to a cell. This means each cell can have atmost 1 bat and 1 pit.
 
-4. LinkedHashMap is used in tests while adding a map containing the distribution percentage of bats and pits
-to have an ordering when the tests run. Adding other types of maps that don't have an internal order can
-result in random responses and mazes.
 
-5. When an arrow is fired at a wall, the number of arrows remain the same. This behaviour is handled by the 
-controller.
 
-6. A player may get killed as soon as the game starts. A random cell is selected where a player is placed. 
-It is not always possible to add player to a safe place when the game starts. Sometimes, the player may
-end-up in the cell that has pit or wumpus and may die as soon as the game starts. Also if bats are 
-present in a cell, they may transport the player to the same cell or to a different cell as soon as the game
-starts. 
-
-7. A bat may drop a player to a cellthat contains a bat. The second bat then again may pick the player and 
-drop them in another random cell.
-
-8. There is a limit on the number of internal walls and border walls that can be removed. If the parameter
-passed to the model is incorrect, then the model simply throws an exception instead of continuing.
