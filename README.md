@@ -49,10 +49,10 @@ where they may get killed. This can happen when a player may be asigned to a cel
 2. The following icons are used:
     - Player 1![Player 1](./src/resources/extras/download_circle.png) 
     - Plaeyr 2![Player 2](./src/resources/extras/download_circle_blue.png)
-    - Wumpus nearby: [Wumpus](./src/resources/htw/wumpus-nearby.png)
-    - Pit nearby [pit](./src/resources/htw/slime-pit-nearby.png)
-    - Wumpus [Wumpus](./src/resources/htw-images/wumpus.png)
-    - Pit [Pit](./src/resources/htw-images/pit.png)
+    - Wumpus nearby: ![Wumpus](./src/resources/htw/wumpus-nearby.png)
+    - Pit nearby ![pit](./src/resources/htw/slime-pit-nearby.png)
+    - Wumpus ![Wumpus](./src/resources/htw-images/wumpus.png)
+    - Pit ![Pit](./src/resources/htw-images/pit.png)
 
 
 
