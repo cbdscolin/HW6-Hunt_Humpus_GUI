@@ -47,7 +47,7 @@ is forced to reenter the options if such case arises. However, a player may be a
 where they may get killed. This can happen when a player may be asigned to a cell with bats and the bats may carry the player to a cell with pits or wumpus and end up killing them.
 
 2. The following icons are used:
-    - ![Player 1](/src/resources/extras/black_circle.png) 
+    - ![Player 1](/src/resources/extras/black.png) 
 
 
 
