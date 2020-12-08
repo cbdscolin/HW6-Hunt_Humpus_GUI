@@ -41,6 +41,8 @@ is forced to reenter the options if such case arises. However, a player may be a
 
 8. There is a limit on the number of internal walls and border walls that can be removed. If the parameter passed to the model is incorrect, then the model simply throws an exception instead of continuing and the controller prompts new input.
 
+9. Once the game ends the maze screen is disabled and player can only view the screen. To restart a new game player has to press **q** to go to main screen to select options. 
+
 
 #### Design Changes:
 1. In the GUI mode, the controller tries to get input from the user again if it finds that the user inputs can kill the player even before they decide to do an action. However sometimes this is not possible and the model forces the player to a cell
