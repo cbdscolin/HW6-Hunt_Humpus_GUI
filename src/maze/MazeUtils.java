@@ -1,8 +1,9 @@
 package maze;
 
-import java.awt.*;
+import java.awt.Image;
+import java.awt.Graphics2D;
+import java.awt.AlphaComposite;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,6 +29,14 @@ public class MazeUtils {
   public static final int MAX_PERCENT = 100;
   public static final int BAT_PICK_PERCENTAGE = 50;
 
+  /**
+   * Returns the list of images for each cell displayed in the maze.
+   * @param grid the cells.
+   * @param showBarriers true if all bats, pits and wumpus etc have to be shown
+   * @param maze the maze which has these cells
+   * @param players the list of players used to identify position
+   * @return the images for cells
+   */
   public static Image[][] renderImages(Cell[][] grid, boolean showBarriers, IMaze maze,
                                        List<MazePlayer> players) {
     Image[][] cellImages = new Image[grid.length][grid[0].length];
@@ -40,9 +49,9 @@ public class MazeUtils {
           allImages.add(MazeImageUtils.getCellNotVisitedImage());
         } else {
           MazePoint currentPoint = new MazePoint(ii, jj);
-          Optional<MazePlayer> cellPlayer = players.stream().filter(player -> player.getCurrentCoordinates()
-                  .equals(currentPoint)).findFirst();
-          if (cellPlayer.isPresent()) {
+          Optional<MazePlayer> cellPlayer = players.stream().filter(player ->
+                  player.getCurrentCoordinates().equals(currentPoint)).findFirst();
+          if (cellPlayer.isPresent() && cellPlayer.get().isPlayerAlive()) {
             if (cellPlayer.get().getPlayerIndex() == 0) {
               allImages.add(MazeImageUtils.getCellPlayerOneImage());
             } else {
@@ -86,24 +95,20 @@ public class MazeUtils {
       imgA = ImageIO.read(MazeUtils.class.getResource(images.get(ii)));
       for (ii = 1; ii < images.size(); ii++) {
         BufferedImage imgB = ImageIO.read(MazeUtils.class.getResource(images.get(ii)));
-        if (true) {
-          float alpha = 0.5f;
-          int compositeRule = AlphaComposite.SRC_OVER;
-          AlphaComposite ac;
-          int imgW = imgA.getWidth();
-          int imgH = imgA.getHeight();
-          BufferedImage overlay = new BufferedImage(imgW, imgH, BufferedImage.TYPE_INT_ARGB);
-          Graphics2D g = overlay.createGraphics();
-          ac = AlphaComposite.getInstance(compositeRule, alpha);
-          g.drawImage(imgA, 0, 0, null);
-          g.setComposite(ac);
-          g.drawImage(imgB, 0, 0, null);
-          g.setComposite(ac);
-          g.dispose();
-          imgA = overlay;
-        } else {
-          System.err.println("Dimension mismatch ");
-        }
+        float alpha = 0.5f;
+        int compositeRule = AlphaComposite.SRC_OVER;
+        AlphaComposite ac;
+        int imgW = imgA.getWidth();
+        int imgH = imgA.getHeight();
+        BufferedImage overlay = new BufferedImage(imgW, imgH, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = overlay.createGraphics();
+        ac = AlphaComposite.getInstance(compositeRule, alpha);
+        g.drawImage(imgA, 0, 0, null);
+        g.setComposite(ac);
+        g.drawImage(imgB, 0, 0, null);
+        g.setComposite(ac);
+        g.dispose();
+        imgA = overlay;
       }
     } catch (Exception ignored) {
       System.out.println("Exception in image overlay: " + ignored.getMessage()
@@ -116,8 +121,8 @@ public class MazeUtils {
    * Renders a grid of maze cells as ASCII art. The grid is represented as an
    * array of array of Cell. Uses Cell equals method to determine players position in a maze.
    * @param grid the grid to render
-   * @param players a cell representing player's current location, can be null if there is no players
-   * @param showBarriers
+   * @param players a cell representing player current location can be null if there is no players
+   * @param showBarriers show bat, pits, wumpus
    * @return the ASCII art representation of the maze
    */
   public static String render(Cell[][] grid, List<MazePlayer> players, boolean showBarriers) {

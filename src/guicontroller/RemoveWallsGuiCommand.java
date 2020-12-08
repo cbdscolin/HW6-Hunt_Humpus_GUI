@@ -4,7 +4,6 @@ import java.util.Map;
 
 import gamemodel.IGameModel;
 import mazecreatures.CreatureType;
-import mazeexceptions.UnrecoverableException;
 import player.PlayerKilledException;
 
 /**

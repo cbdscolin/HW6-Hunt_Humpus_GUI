@@ -84,10 +84,10 @@ public class MazeController implements IMazeController {
       }
 
     } catch (PlayerKilledException exp) {
-      output.append("Player "  + (model.getActivePlayerIndex() + 1)+ "  Lost !!!!\n");
+      output.append("Player "  + (model.lastKilledPlayerIndex() + 1) + "  Lost !!!!\n");
       output.append(exp.getMessage()).append("\n");
     } catch (PlayerKillsWumpusException exp) {
-      output.append("Player " + (model.getActivePlayerIndex() + 1)+ " Wins !!!!\n");
+      output.append("Player " + (model.lastKilledPlayerIndex() + 1) + " Wins !!!!\n");
       output.append(exp.getMessage()).append("\n");
     } catch (UnrecoverableException | RecoverableException exp) {
       output.append(exp.getMessage()).append("\n");

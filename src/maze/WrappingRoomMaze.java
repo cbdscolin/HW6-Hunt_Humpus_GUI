@@ -30,7 +30,7 @@ public class WrappingRoomMaze extends NonWrappingRoomMaze {
    * @param extraInternalWallsToRemove extra walls that have to be removed
    * @param borderWallsToRemove the number of walls at the border to be removed. At-least
    *                            a value of will make the maze a wrapping maze.
-   * @param playerCount
+   * @param playerCount number of players
    * @throws IllegalArgumentException thrown when invalid null generators, total rows & columns
    *        are used or trying to remove too many border walls
    */

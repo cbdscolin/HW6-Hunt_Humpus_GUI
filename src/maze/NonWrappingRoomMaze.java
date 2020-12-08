@@ -27,7 +27,7 @@ public class NonWrappingRoomMaze extends AbstractMaze {
    * @param totalRows number of rows in maze
    * @param extraInternalWallsToRemove extra walls that have to be removed. These walls are
    *                                   removed after a perfect maze is generated.
-   * @param playerCount
+   * @param playerCount number of players
    * @throws IllegalArgumentException thrown when invalid null generators, total rows & columns
    *        are used or trying to remove too many internal walls.
    */

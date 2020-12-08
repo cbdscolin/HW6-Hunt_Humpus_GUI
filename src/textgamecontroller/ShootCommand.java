@@ -51,7 +51,7 @@ public class ShootCommand extends AbstractCommand {
   public void execute() throws RecoverableException, PlayerKillsWumpusException,
           PlayerKilledException, IOException {
     Scanner scanner = this.input;
-    output.append("Enter the direction (N / S / E / W ) in which arrow has to be shot:\n");
+    output.append("Enter the direction (North / South / East / West) in which arrow has to be shot:\n");
     Direction validDirection = getRelevantDirection(scanner);
     if (validDirection == null) {
       throw new RecoverableException("Invalid direction entered while shooting\n");

@@ -104,9 +104,15 @@ public class Cell {
     this.creatures.add(creature);
   }
 
+  /**
+   * Returns true if cell has pit or a wumpus.
+   * @param cell cell to be checked
+   * @return true if cell has pit or a wumpus
+   */
   public static boolean canCellKillPlayer(Cell cell) {
-    return cell == null || (cell.creatures.stream().anyMatch(creature -> (creature.getCreatureType() ==
-            CreatureType.PIT || creature.getCreatureType() == CreatureType.WUMPUS)));
+    return cell == null || (cell.creatures.stream().anyMatch(creature ->
+            (creature.getCreatureType() == CreatureType.PIT
+                    || creature.getCreatureType() == CreatureType.WUMPUS)));
   }
 
   public void markVisible() {

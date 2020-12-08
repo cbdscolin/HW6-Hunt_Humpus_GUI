@@ -26,7 +26,8 @@ public class MazePlayer {
    * @param playerIndex used to indicate the player out of list of players playing the game
    * @throws IllegalArgumentException thrown when negative start co-ordinates are used
    */
-  public MazePlayer(int startX, int startY, int arrowCount, int playerIndex) throws IllegalArgumentException {
+  public MazePlayer(int startX, int startY, int arrowCount, int playerIndex) throws
+          IllegalArgumentException {
     if (startX < 0 || startY < 0) {
       throw new IllegalArgumentException("Negative start coordinates can't be used");
     }

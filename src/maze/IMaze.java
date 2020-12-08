@@ -1,7 +1,6 @@
 package maze;
 
-
-import java.awt.*;
+import java.awt.Image;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -9,6 +8,7 @@ import java.util.Random;
 import graph.MazePoint;
 import mazecreatures.CreatureType;
 import mazeexceptions.RecoverableException;
+import player.MazePlayer;
 import player.PlayerKilledException;
 import player.PlayerKillsWumpusException;
 
@@ -72,9 +72,8 @@ public interface IMaze {
 
   /**
    * Prints the maze by displaying all the cells.
-   *
+   * @param showBarriers show bats, pits, wumpus
    * @return the view of the maze
-   * @param showBarriers
    */
   String printMaze(boolean showBarriers);
 
@@ -187,8 +186,37 @@ public interface IMaze {
   /**
    * Returns the images to be displayed at each cell.
    * @return images to be displayed at each cell.
-   * @param showBarriers
+   * @param showBarriers shows bats, pits, wumpus etc.
    */
-  public Image[][] getImagesToDisplayInCells(boolean showBarriers);
+  Image[][] getImagesToDisplayInCells(boolean showBarriers);
 
+  /**
+   * Function increments the number of players killed during the game.
+   * @param player player
+   */
+  void incrementKilledPlayersCount(MazePlayer player);
+
+  /**
+   * Function returns true if game is complete. Game is complete when all players are dead
+   * or wumpus is killed.
+   * @return true if the game is complete, false otherwise
+   */
+  boolean isGameComplete();
+
+  /**
+   * Function marks that the wumpus in the maze is dead.
+   */
+  void markWumpusDead();
+
+  /**
+   * Returns the index of the last player who was killed.
+   * @return index of player killed
+   * @throws IllegalStateException thrown when index is incorrect
+   */
+  int lastKilledPlayerIndex() throws IllegalStateException;
+
+  /**
+   * Changes the player turn. The next player can now make their move.
+   */
+  void changePlayerTurn();
 }

@@ -1,6 +1,6 @@
 package gamemodel;
 
-import java.awt.*;
+import java.awt.Image;
 import java.util.List;
 import java.util.Map;
 
@@ -33,8 +33,10 @@ public class GameModel implements IGameModel {
    * Initializes empty game model. A maze has to be passed at a later point of time.
    */
   public GameModel() {
+    //Maze is set later by the controller.
   }
 
+  @Override
   public void setMaze(IMaze maze) {
     if (maze == null) {
       throw new IllegalArgumentException("Null maze passed to game model");
@@ -46,6 +48,7 @@ public class GameModel implements IGameModel {
     return maze == null;
   }
 
+  @Override
   public String printMaze(boolean showBarriers) throws IllegalStateException {
     if (isMazeNull()) {
       throw new IllegalStateException("Maze is null in printMaze");
@@ -83,6 +86,7 @@ public class GameModel implements IGameModel {
     return maze.getValidDirectionsForMovement();
   }
 
+  @Override
   public boolean checkCreatureInAdjacentCells(CreatureType creatureType) throws
           IllegalStateException {
     if (isMazeNull()) {
@@ -136,5 +140,15 @@ public class GameModel implements IGameModel {
       throw new IllegalStateException("Maze is null in getActivePlayerIndex");
     }
     return this.maze.getActivePlayerIndex();
+  }
+
+  @Override
+  public boolean isGameComplete() {
+    return maze.isGameComplete();
+  }
+
+  @Override
+  public int lastKilledPlayerIndex() throws IllegalStateException {
+    return maze.lastKilledPlayerIndex();
   }
 }

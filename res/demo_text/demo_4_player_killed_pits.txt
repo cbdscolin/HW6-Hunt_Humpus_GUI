@@ -1,0 +1,51 @@
+Enter the number of rows in the maze:
+
+3
+Enter the number of columns in the maze:
+
+3
+Enter the number of internal walls from the maze to be removed:
+
+2
+Enter the number of border walls from the maze to be removed:
+
+0
+Enter the number of players playing the game:
+
+2
+Enter the percentage occurrence of Pit in maze. Enter an integer between 0 & 100
+60
+Enter the percentage occurrence of Bat in maze. Enter an integer between 0 & 100
+0
+Enter a non-zero value for number of arrows possessed by the player:
+3
+Player is in the position: (X, Y) = (0, 1)
+ 
+Do you want to view the table with Wumpus/Player/Pit positions?:
+Type Y or y to enable displaying table, press N otherwise
+y
++------------------------+------------------------+------------------------+
+|                                          P1  P2                          |
++----------    ----------+----------    ----------+----------    ----------+
+|                    Pit               Wumpus Pit |                        |
++----------    ----------+----------    ----------+----------    ----------+
+|                        |                                                 |
++------------------------+------------------------+------------------------+
+Player can move in directions: [ East South West ]
+Player can feel draft!
+Player can smell Wumpus!
+Shoot or move? Press S or s to shoot and M or m to move:
+m
+Enter the direction (North / South / East / West ) in which player wants to move:
+South
+Player position: (X, Y) = (0, 1)
+
+Player 1  Lost !!!!
+Player killed by Wumpus!
++------------------------+------------------------+------------------------+
+|                                              P2                          |
++----------    ----------+----------    ----------+----------    ----------+
+|                    Pit           Wumpus Pit  P1 |                        |
++----------    ----------+----------    ----------+----------    ----------+
+|                        |                                                 |
++------------------------+------------------------+------------------------+

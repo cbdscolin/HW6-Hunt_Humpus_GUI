@@ -1,0 +1,50 @@
+Enter the number of rows in the maze:
+
+3
+Enter the number of columns in the maze:
+
+3
+Enter the number of internal walls from the maze to be removed:
+
+0
+Enter the number of border walls from the maze to be removed:
+
+0
+Enter the number of players playing the game:
+
+1
+Enter the percentage occurrence of Pit in maze. Enter an integer between 0 & 100
+10
+Enter the percentage occurrence of Bat in maze. Enter an integer between 0 & 100
+100
+Enter a non-zero value for number of arrows possessed by the player:
+3
+Player is in the position: (X, Y) = (0, 1)
+ 
+Player encounters bats & dodges them!!
+Do you want to view the table with Wumpus/Player/Pit positions?:
+Type Y or y to enable displaying table, press N otherwise
+y
++------------------------+------------------------+------------------------+
+|                    Bat                  Bat  P1                      Bat |
++------------------------+----------    ----------+------------------------+
+|                                             Bat                          |
++----------    ----------+----------    ----------+----------    ----------+
+|                    Bat |             Wumpus Bat |                    Bat |
++------------------------+------------------------+------------------------+
+Player can move in directions: [ East South West ]
+Shoot or move? Press S or s to shoot and M or m to move:
+s
+Enter the direction (North / South / East / West) in which arrow has to be shot:
+South
+Enter the non-zero power value with which arrow has to be shot:
+2
+Player 1 Wins !!!!
+Player kills Wumpus !!!!
++------------------------+------------------------+------------------------+
+|                    Bat                  Bat  P1                      Bat |
++------------------------+----------    ----------+------------------------+
+|                                             Bat                          |
++----------    ----------+----------    ----------+----------    ----------+
+|                    Bat |             Wumpus Bat |                    Bat |
++------------------------+------------------------+------------------------+

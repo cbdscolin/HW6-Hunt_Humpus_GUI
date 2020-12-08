@@ -13,5 +13,6 @@ public abstract class WumpusPitAbstractAction implements ICreatureAction {
   @Override
   public void executeAction(MazePlayer player, IMaze maze) throws PlayerKilledException {
     player.markPlayerDead();
+    maze.incrementKilledPlayersCount(player);
   }
 }

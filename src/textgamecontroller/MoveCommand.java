@@ -42,7 +42,7 @@ public class MoveCommand extends ShootCommand {
   @Override
   public void execute() throws RecoverableException, IOException, PlayerKilledException {
     Scanner scanner = this.input;
-    output.append("Enter the direction (N / S / E / W ) in which player wants to move:\n");
+    output.append("Enter the direction (North / South / East / West ) in which player wants to move:\n");
     Direction validDirection = super.getRelevantDirection(scanner);
     if (validDirection == null) {
       throw new RecoverableException("Invalid direction entered to walk\n");

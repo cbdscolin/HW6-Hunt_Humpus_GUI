@@ -1,0 +1,53 @@
+Enter the number of rows in the maze:
+
+3
+Enter the number of columns in the maze:
+
+3
+Enter the number of internal walls from the maze to be removed:
+
+0
+Enter the number of border walls from the maze to be removed:
+
+0
+Enter the number of players playing the game:
+
+2
+Enter the percentage occurrence of Pit in maze. Enter an integer between 0 & 100
+0
+Enter the percentage occurrence of Bat in maze. Enter an integer between 0 & 100
+100
+Enter a non-zero value for number of arrows possessed by the player:
+2
+Player is in the position: (X, Y) = (1, 1)
+ 
+Player encounters bats & dodges them!!
+Do you want to view the table with Wumpus/Player/Pit positions?:
+Type Y or y to enable displaying table, press N otherwise
+y
++------------------------+------------------------+------------------------+
+|                    Bat                          |                    Bat |
++------------------------+----------    ----------+----------    ----------+
+|                    Bat                  Bat  P1               Wumpus Bat |
++------------------------+------------------------+----------    ----------+
+|                Bat  P2                                                   |
++------------------------+------------------------+------------------------+
+Player can move in directions: [ North East West ]
+Player can smell Wumpus!
+Shoot or move? Press S or s to shoot and M or m to move:
+m
+Enter the direction (North / South / East / West ) in which player wants to move:
+West
+Player encountered bats
+Player was carried by the bats!!!
+Player position: (X, Y) = (2, 0)
+
+Player 2  Lost !!!!
+Player killed by Wumpus!
++------------------------+------------------------+------------------------+
+|                    Bat                          |                    Bat |
++------------------------+----------    ----------+----------    ----------+
+|                    Bat                      Bat           Wumpus Bat  P1 |
++------------------------+------------------------+----------    ----------+
+|                Bat  P2                                                   |
++------------------------+------------------------+------------------------+

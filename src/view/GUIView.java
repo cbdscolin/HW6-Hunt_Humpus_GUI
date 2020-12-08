@@ -1,11 +1,34 @@
 package view;
 
-import java.awt.*;
+import java.awt.Image;
+import java.awt.Container;
+import java.awt.Color;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Font;
 import java.awt.event.KeyEvent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.ImageIcon;
+import javax.swing.UIManager;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.JComponent;
+import javax.swing.JTextArea;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.BoxLayout;
+import javax.swing.JOptionPane;
+import javax.swing.JSpinner;
+import javax.swing.JCheckBox;
 import java.awt.event.KeyListener;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import guicontroller.IMazeGUIController;
 import maze.Direction;
@@ -44,8 +67,6 @@ public class GUIView extends JFrame implements IView {
 
   private Container inputContainer;
 
-  private JPanel mazePanel;
-
   private JPanel mazeCommandPanel;
 
   private Container mazeContainer;
@@ -70,8 +91,6 @@ public class GUIView extends JFrame implements IView {
 
   private final IMazeGUIController mazeController;
 
-  private JTextField infoField;
-
   private int rows;
 
   private int columns;
@@ -88,6 +107,12 @@ public class GUIView extends JFrame implements IView {
 
   private int arrowCount;
 
+  /**
+   * Creates a jframe and lists options where player can choose configs, restore game, move
+   * or shoot wumpus and various actions can be performed.
+   * @param ctx the header of this frame
+   * @param mazeController the controller
+   */
   public GUIView(String ctx, IMazeGUIController mazeController) {
     super(ctx);
     if (mazeController == null) {
@@ -143,7 +168,7 @@ public class GUIView extends JFrame implements IView {
     mazeCommandPanel.setBounds(0, 0, 800, 600);
 
     mazeContainer = new Container();
-    mazePanel = new JPanel();
+    JPanel mazePanel = new JPanel();
     scrollPane = new JScrollPane();
     mazeContainer.setLayout(null);
     scrollPane.setPreferredSize(new Dimension(400, 400));
@@ -168,7 +193,7 @@ public class GUIView extends JFrame implements IView {
     gbc.weightx = 0.15;
     gbc.weighty = 0.15;
     mazeCommandPanel.add(commandContainer, gbc);
-    infoField = new JTextField();
+    JTextField infoField = new JTextField();
     infoField.setText("   Press w, a, s or d key to move players. Press ctrl and w, a,"
             + " s or d together to shoot. Press q to restart the game! Player 1 is marked as"
             + " black circle.");
@@ -205,6 +230,7 @@ public class GUIView extends JFrame implements IView {
     this.addKeyListener(new KeyListener() {
       @Override
       public void keyTyped(KeyEvent e) {
+        //No events here.
       }
 
       @Override
@@ -245,7 +271,7 @@ public class GUIView extends JFrame implements IView {
             isControlPressed = false;
             int power = getArrowPower();
             mazeController.shootPlayerInDirection(direction, power);
-          };
+          }
         }
       }
     });
@@ -258,6 +284,7 @@ public class GUIView extends JFrame implements IView {
     this.mazeContainer.setEnabled(false);
   }
 
+  @Override
   public void sendCellImagesToView(Image[][] images) {
     mazeContainer.removeAll();
     int rows = images.length;
@@ -309,21 +336,25 @@ public class GUIView extends JFrame implements IView {
     this.validDirectionsLabel.setText(message);
   }
 
+  @Override
   public void showPlayerTurnMessage(String message) {
     this.playerTurnLabel.setVisible(true);
     this.playerTurnLabel.setText(message);
   }
 
+  @Override
   public void showInputScreen() {
     this.inputContainer.setVisible(true);
     this.mazeCommandPanel.setVisible(false);
     this.mazeContainer.setEnabled(false);
   }
 
+  @Override
   public void hideInputScreen() {
     this.inputContainer.setVisible(false);
   }
 
+  @Override
   public void showMaze() {
     this.mazeContainer.setEnabled(true);
     this.inputContainer.setVisible(false);
@@ -354,43 +385,55 @@ public class GUIView extends JFrame implements IView {
             SPINNER_HEIGHT);
 
     JLabel internalWallLabel = new JLabel("Number of internal walls to be removed: ");
-    internalWallLabel.setBounds(LABEL_X_POS, startPos + 2 * INPUT_MAX_PADDING, LABEL_WIDTH, SPINNER_HEIGHT);
+    internalWallLabel.setBounds(LABEL_X_POS, startPos + 2 * INPUT_MAX_PADDING,
+            LABEL_WIDTH, SPINNER_HEIGHT);
     internalWallsModel = new SpinnerNumberModel(0, 0,
             Integer.MAX_VALUE, 1);
     JSpinner internalWallScrollBar = new JSpinner(internalWallsModel);
-    internalWallScrollBar.setBounds(SPINNER_X_POS, startPos + 2 * INPUT_MAX_PADDING, SPINNER_WIDTH, SPINNER_HEIGHT);
+    internalWallScrollBar.setBounds(SPINNER_X_POS, startPos + 2 * INPUT_MAX_PADDING,
+            SPINNER_WIDTH, SPINNER_HEIGHT);
 
     JLabel externalWallLabel = new JLabel("Number of border walls to be removed: ");
-    externalWallLabel.setBounds(LABEL_X_POS, startPos + 3 * INPUT_MAX_PADDING, LABEL_WIDTH, LABEL_HEIGHT);
+    externalWallLabel.setBounds(LABEL_X_POS, startPos + 3 * INPUT_MAX_PADDING,
+            LABEL_WIDTH, LABEL_HEIGHT);
     externalWallsModel = new SpinnerNumberModel(0, 0, Integer.MAX_VALUE,
             1);
     JSpinner externalWallScrollBar = new JSpinner(externalWallsModel);
-    externalWallScrollBar.setBounds(SPINNER_X_POS, startPos + 3 * INPUT_MAX_PADDING, SPINNER_WIDTH, SPINNER_HEIGHT);
+    externalWallScrollBar.setBounds(SPINNER_X_POS, startPos + 3 * INPUT_MAX_PADDING,
+            SPINNER_WIDTH, SPINNER_HEIGHT);
 
     JLabel playerCountLabel = new JLabel("Number of players in the game: ");
-    playerCountLabel.setBounds(LABEL_X_POS, startPos + 4 * INPUT_MAX_PADDING, LABEL_WIDTH, LABEL_HEIGHT);
+    playerCountLabel.setBounds(LABEL_X_POS, startPos + 4 * INPUT_MAX_PADDING,
+            LABEL_WIDTH, LABEL_HEIGHT);
     playerCountModel = new SpinnerNumberModel(2, 1, 2, 1);
     JSpinner playerCountScrollBar = new JSpinner(playerCountModel);
-    playerCountScrollBar.setBounds(SPINNER_X_POS, startPos + 4 * INPUT_MAX_PADDING, SPINNER_WIDTH, SPINNER_HEIGHT);
+    playerCountScrollBar.setBounds(SPINNER_X_POS, startPos + 4 * INPUT_MAX_PADDING,
+            SPINNER_WIDTH, SPINNER_HEIGHT);
 
     JLabel batPercentLabel = new JLabel("Percentage of cells with Bats: ");
-    batPercentLabel.setBounds(LABEL_X_POS, startPos + 5 * INPUT_MAX_PADDING, LABEL_WIDTH, LABEL_HEIGHT);
+    batPercentLabel.setBounds(LABEL_X_POS, startPos + 5 * INPUT_MAX_PADDING,
+            LABEL_WIDTH, LABEL_HEIGHT);
     batPercentModel = new SpinnerNumberModel(0, 0, 100, 1);
     JSpinner batPercentScrollBar = new JSpinner(batPercentModel);
-    batPercentScrollBar.setBounds(SPINNER_X_POS, startPos + 5 * INPUT_MAX_PADDING, SPINNER_WIDTH, SPINNER_HEIGHT);
+    batPercentScrollBar.setBounds(SPINNER_X_POS, startPos + 5 * INPUT_MAX_PADDING,
+            SPINNER_WIDTH, SPINNER_HEIGHT);
 
 
     JLabel pitPercentLabel = new JLabel("Percentage of cells with Pits: ");
-    pitPercentLabel.setBounds(LABEL_X_POS, startPos + 6 * INPUT_MAX_PADDING, LABEL_WIDTH, LABEL_HEIGHT);
+    pitPercentLabel.setBounds(LABEL_X_POS, startPos + 6 * INPUT_MAX_PADDING,
+            LABEL_WIDTH, LABEL_HEIGHT);
     pitPercentModel = new SpinnerNumberModel(0, 0, 100, 1);
     JSpinner pitPercentScrollBar = new JSpinner(pitPercentModel);
-    pitPercentScrollBar.setBounds(SPINNER_X_POS, startPos + 6 * INPUT_MAX_PADDING, SPINNER_WIDTH, SPINNER_HEIGHT);
+    pitPercentScrollBar.setBounds(SPINNER_X_POS, startPos + 6 * INPUT_MAX_PADDING,
+            SPINNER_WIDTH, SPINNER_HEIGHT);
 
     JLabel arrowCountLabel = new JLabel("Number of arrows available per player: ");
-    arrowCountLabel.setBounds(LABEL_X_POS, startPos + 7 * INPUT_MAX_PADDING, LABEL_WIDTH, LABEL_HEIGHT);
+    arrowCountLabel.setBounds(LABEL_X_POS, startPos + 7 * INPUT_MAX_PADDING,
+            LABEL_WIDTH, LABEL_HEIGHT);
     arrowCountModel = new SpinnerNumberModel(2, 2, Integer.MAX_VALUE, 1);
     JSpinner arrowCountScrollBar = new JSpinner(arrowCountModel);
-    arrowCountScrollBar.setBounds(SPINNER_X_POS, startPos + 7 * INPUT_MAX_PADDING, SPINNER_WIDTH, SPINNER_HEIGHT);
+    arrowCountScrollBar.setBounds(SPINNER_X_POS, startPos + 7 * INPUT_MAX_PADDING,
+            SPINNER_WIDTH, SPINNER_HEIGHT);
 
     addToInputContainer(rowLabel);
     addToInputContainer(rowScrollBar);

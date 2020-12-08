@@ -1,6 +1,6 @@
 package gamemodel;
 
-import java.awt.*;
+import java.awt.Image;
 import java.util.List;
 import java.util.Map;
 
@@ -22,14 +22,14 @@ public interface IGameModel {
    * The maze used by the player to play the game is set in this function.
    * @param maze maze used for this game
    */
-  public void setMaze(IMaze maze);
+  void setMaze(IMaze maze);
 
   /**
    * Function that prints the maze along with the position of bats, pits & wumpus.
+   * @param showBarriers show wumpus, bats, pit etc
    * @return the view of maze containing bats, pits, player & wumpus.
-   * @param showBarriers
    */
-  public String printMaze(boolean showBarriers);
+  String printMaze(boolean showBarriers);
 
   /**
    * Function used to generate a perfect maze by keeping only those edges that are necessary to make
@@ -116,9 +116,23 @@ public interface IGameModel {
 
   /**
    * Returns the images to be displayed at each cell.
+   * @param showBarriers shows pits, bats, wumpus in the cells if true
    * @return images to be displayed at each cell.
-   * @param showBarriers
    */
-  public Image[][] getImagesToDisplayInCells(boolean showBarriers);
+  Image[][] getImagesToDisplayInCells(boolean showBarriers);
+
+  /**
+   * Function returns true if game is complete. Game is complete when all players are dead
+   * or wumpus is killed.
+   * @return true if the game is complete, false otherwise
+   */
+  boolean isGameComplete();
+
+  /**
+   * Returns the index of the last player who was killed.
+   * @return index of player killed
+   * @throws IllegalStateException thrown when index is incorrect
+   */
+  int lastKilledPlayerIndex() throws IllegalStateException;
 
 }

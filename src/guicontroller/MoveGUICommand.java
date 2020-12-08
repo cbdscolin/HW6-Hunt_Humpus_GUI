@@ -1,9 +1,7 @@
 package guicontroller;
 
 import gamemodel.IGameModel;
-import graph.MazePoint;
 import maze.Direction;
-import mazecreatures.CreatureType;
 import player.PlayerKilledException;
 
 /**
@@ -16,9 +14,17 @@ public class MoveGUICommand implements IMazeGUICommand {
   private final Direction direction;
 
   private final IGameModel model;
+
+  /**
+   * Constructor for the sub type of the abstract command class. It initializes the model that
+   * is used by other commands inheriting this class.
+   * @param model model of the mvc architecture which has maze, player and other creatures.
+   * @param direction direction to move the player
+   * @throws IllegalArgumentException thrown when direction or model is null
+   */
   public MoveGUICommand(IGameModel model, Direction direction) throws IllegalArgumentException {
-    if (direction == null) {
-      throw new IllegalArgumentException("Direction cannot be null in GUI move command");
+    if (direction == null || model == null) {
+      throw new IllegalArgumentException("Direction/model cannot be null in GUI move command");
     }
     this.model = model;
     this.direction = direction;
@@ -26,13 +32,6 @@ public class MoveGUICommand implements IMazeGUICommand {
 
   @Override
   public CommandOutputMessage execute() {
-    MazePoint oldPosition = this.model.getActivePlayerCoordinates();
-    MazePoint expectedPosition = this.model
-            .getExpectedMovementPosition(oldPosition, direction);
-    MazePoint newPosition;
-    boolean hasBats = this.model.resultingCellHasCreature(oldPosition,
-            direction, CreatureType.BAT, 2);
-    StringBuilder status = new StringBuilder();
     try {
       model.movePlayerInDirection(direction);
     } catch (PlayerKilledException exception) {

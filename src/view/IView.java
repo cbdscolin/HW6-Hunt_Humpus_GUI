@@ -1,6 +1,6 @@
 package view;
 
-import java.awt.*;
+import java.awt.Image;
 
 /**
  * Interface that outlines the functionality of View in MVC design of Hunt the Wumpus console
@@ -39,7 +39,7 @@ public interface IView {
    * Displays the maze. Each cell can be a tunnel/non-tunnel containing bat, wumpus, player,
    * pit or smell pit or wumpus.
    */
-  public void showMaze();
+  void showMaze();
 
   /**
    * Sends cell images to be displayed by the view.

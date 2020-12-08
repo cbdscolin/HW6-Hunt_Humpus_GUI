@@ -3,7 +3,6 @@ package guicontroller;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Random;
 
 import gamemodel.IGameModel;
@@ -33,6 +32,10 @@ public class MazeGUIController implements IMazeGUIController {
 
   private IView view;
 
+  /**
+   * Initializes the controller for the GUI version of the hunt the wumpus game.
+   * @param model the model for this game
+   */
   public MazeGUIController(IGameModel model) {
     if (model == null) {
       throw new IllegalArgumentException("Null model passed to controller");
@@ -60,10 +63,11 @@ public class MazeGUIController implements IMazeGUIController {
 
   @Override
   public void createMaze(int rows, int columns, int internalWalls, int externalWalls,
-                         int playerCount, int pitPercentage, int batPercentage, int arrowCount, boolean usePast) {
+                         int playerCount, int pitPercentage, int batPercentage, int arrowCount,
+                         boolean usePast) {
     IMaze maze;
-    if (!usePast || (batMovementGenerator == 0 && adversaryGenerator == 0 &&
-            wallGenerator == 0)) {
+    if (!usePast || (batMovementGenerator == 0 && adversaryGenerator == 0
+            && wallGenerator == 0)) {
       wallGenerator =  Math.round(Math.random());
       adversaryGenerator = Math.round(Math.random());
       batMovementGenerator = Math.round(Math.random());
@@ -110,17 +114,25 @@ public class MazeGUIController implements IMazeGUIController {
       view.showErrorMessage(outputMessage.getStatusMessage());
       view.sendCellImagesToView(model.getImagesToDisplayInCells(false));
     } else if (outputMessage.isPlayerKilled()) {
-      view.sendCellImagesToView(model.getImagesToDisplayInCells(true));
-      view.endGameWithMessage("Player " + (model.getActivePlayerIndex() + 1) + " has lost!\n");
-      view.showPlayerTurnMessage(outputMessage.getStatusMessage());
+      if (model.isGameComplete()) {
+        view.endGameWithMessage("Player " + (model.lastKilledPlayerIndex() + 1) + " has lost!\n");
+        view.sendCellImagesToView(model.getImagesToDisplayInCells(true));
+        view.showPlayerTurnMessage(outputMessage.getStatusMessage());
+      } else {
+        view.showGameStatusMessage("Player " + (model.lastKilledPlayerIndex() + 1)
+                + " has lost!\n");
+        view.sendCellImagesToView(model.getImagesToDisplayInCells(false));
+        this.sendPlayerTurnMessage();
+        this.sendValidDirectionsMessage();
+      }
     } else if (outputMessage.isWumpusKilled()) {
       view.sendCellImagesToView(model.getImagesToDisplayInCells(true));
       view.endGameWithMessage("Player " + (model.getActivePlayerIndex() + 1) + " has won!\n");
       view.showPlayerTurnMessage(outputMessage.getStatusMessage());
     } else {
       view.sendCellImagesToView(model.getImagesToDisplayInCells(false));
-      if (outputMessage.getStatusMessage() != null && !outputMessage.getStatusMessage().isEmpty())
-      {
+      if (outputMessage.getStatusMessage() != null
+              && !outputMessage.getStatusMessage().isEmpty()) {
         view.showErrorMessage(outputMessage.getStatusMessage());
       }
       this.sendPlayerTurnMessage();

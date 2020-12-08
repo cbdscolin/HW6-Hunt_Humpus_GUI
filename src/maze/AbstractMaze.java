@@ -1,6 +1,6 @@
 package maze;
 
-import java.awt.*;
+import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,10 +27,6 @@ import player.PlayerKilledException;
  */
 public abstract class AbstractMaze implements IMaze {
 
-  private static final double GOLD_PROBABILITY = 0.2;
-
-  private static final double THIEF_PROBABILITY = 0.1;
-
   protected final Cell[][] cells;
 
   protected final Random wallGenerator;
@@ -49,6 +45,10 @@ public abstract class AbstractMaze implements IMaze {
 
   private final int playerCount;
 
+  private List<MazePlayer> killedPlayers;
+
+  private boolean wumpusKilled;
+
   /**
    * Constructor that accepts random number generators, rows, column count in maze, start &
    * end co-ordinates. Initializes the number of cells in the maze as specified by rows and
@@ -59,13 +59,13 @@ public abstract class AbstractMaze implements IMaze {
    *                            to random cell
    * @param totalColumns number of columns in maze
    * @param totalRows number of rows in maze
-   * @param playerCount
+   * @param playerCount number of players in the game.
    * @throws IllegalArgumentException thrown when invalid null generators, total rows & columns
    *        are used and when player count is less than 1
    */
   protected AbstractMaze(Random wallGenerator, Random adversaryGenerator,
-                         Random movementGenerator, int totalColumns, int totalRows, int playerCount) throws
-          IllegalArgumentException {
+                         Random movementGenerator, int totalColumns, int totalRows, int playerCount)
+          throws IllegalArgumentException {
     if (totalColumns <= 0 || totalRows <= 0) {
       throw new IllegalArgumentException("Number of rows and columns in a maze can't be negative");
     }
@@ -73,7 +73,7 @@ public abstract class AbstractMaze implements IMaze {
       throw new IllegalArgumentException("Bat, adversary or movement Generators can't be null\n");
     }
     if (playerCount < 1) {
-      throw new IllegalArgumentException("Number of players can't be less than zero");
+      throw new IllegalArgumentException("Number of players can't be less than one");
     }
     this.wallGenerator = wallGenerator;
     this.adversaryGenerator = adversaryGenerator;
@@ -84,6 +84,8 @@ public abstract class AbstractMaze implements IMaze {
     this.players = new ArrayList<>(playerCount);
     this.playerCount = playerCount;
     this.nextPlayerIndex = 0;
+    this.killedPlayers = new ArrayList<>();
+    this.wumpusKilled = false;
     initCells();
   }
 
@@ -97,7 +99,6 @@ public abstract class AbstractMaze implements IMaze {
     int columns = getTotalColumns();
     for (int i = 0; i < rows; i++) {
       for (int j = 0; j < columns; j++) {
-        double value = adversaryGenerator.nextInt((rows * columns));
         this.cells[i][j] = new Cell(i, j);
       }
     }
@@ -146,11 +147,11 @@ public abstract class AbstractMaze implements IMaze {
     return MazeUtils.renderImages(cells, showBarriers, this, players);
   }
 
-    /**
-     * Gets the next index for a given column. If the maze is wrapping then modulus is used.
-     * @param column current index of column
-     * @return next index of column.
-     */
+  /**
+   * Gets the next index for a given column. If the maze is wrapping then modulus is used.
+   * @param column current index of column
+   * @return next index of column.
+   */
   public int getNextColumnIndex(int column) {
     int totalCols = getTotalColumns();
     if (isWrappingMaze()) {
@@ -264,7 +265,8 @@ public abstract class AbstractMaze implements IMaze {
   }
 
   private Cell getCellAtDistance(MazePoint point,
-                                 Direction arrowDirection, int distance, boolean markCellAsVisited) {
+                                 Direction arrowDirection,
+                                 int distance, boolean markCellAsVisited) {
     Cell currentCell = this.cells[point.getXCoordinate()][point.getYCoordinate()];
     if (markCellAsVisited) {
       currentCell.markVisible();
@@ -297,8 +299,15 @@ public abstract class AbstractMaze implements IMaze {
     return getCellAtDistance(nextPoint, nextDirections.get(0), distance, markCellAsVisited);
   }
 
-  private void changePlayerTurn() {
-    this.nextPlayerIndex = (this.nextPlayerIndex + 1) % this.playerCount;
+  @Override
+  public void changePlayerTurn() {
+    if (!isGameComplete()) {
+      do {
+        this.nextPlayerIndex = ((this.nextPlayerIndex + 1) % this.playerCount);
+      }
+      while (this.nextPlayerIndex < this.players.size()
+              && !this.players.get(nextPlayerIndex).isPlayerAlive());
+    }
   }
 
   @Override
@@ -315,9 +324,15 @@ public abstract class AbstractMaze implements IMaze {
     }
     Cell finalCell = this.getCellAtDistance(point, dir, power + 1, false);
     if (finalCell != null && finalCell.hasCreature(CreatureType.WUMPUS)) {
+      markWumpusDead();
       return true;
     }
-    players.get(nextPlayerIndex).reduceArrowCount();
+    try {
+      players.get(nextPlayerIndex).reduceArrowCount();
+    } catch (PlayerKilledException exception) {
+      this.incrementKilledPlayersCount(players.get(nextPlayerIndex));
+      throw exception;
+    }
     changePlayerTurn();
     return false;
   }
@@ -547,5 +562,30 @@ public abstract class AbstractMaze implements IMaze {
   @Override
   public int getActivePlayerIndex() {
     return this.nextPlayerIndex;
+  }
+
+  @Override
+  public void incrementKilledPlayersCount(MazePlayer player) {
+    this.killedPlayers.add(player);
+    this.changePlayerTurn();
+  }
+
+  @Override
+  public boolean isGameComplete() {
+    return killedPlayers.size() >= playerCount || wumpusKilled;
+  }
+
+  @Override
+  public void markWumpusDead() {
+    wumpusKilled = true;
+  }
+
+  @Override
+  public int lastKilledPlayerIndex() throws IllegalStateException {
+    if (killedPlayers == null || killedPlayers.isEmpty()) {
+      throw new IllegalArgumentException("No players were killed but fetching last killed "
+              + "player index");
+    }
+    return killedPlayers.get(killedPlayers.size() - 1).getPlayerIndex();
   }
 }
